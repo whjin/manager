@@ -1,0 +1,62 @@
+[
+    {
+        "name": "值班室对讲",
+        "image": "/static/images/index/police/videochat.png",
+        "url": "ManagerCall",
+        "isModal": true
+    },
+    {
+        "name": "监仓对讲",
+        "image": "/static/images/index/police/intercom.png",
+        "url": "TerminalCall",
+        "isModal": true
+    },
+    {
+        "name": "面对面管理",
+        "image": "/static/images/index/police/facemanage.png",
+        "url": "",
+        "index": 26
+    },
+    {
+        "name": "安全大检查",
+        "image": "/static/images/index/police/safecheck.png",
+        "url": "",
+        "index": 28
+    },
+    {
+        "name": "进出监室登记",
+        "image": "/static/images/index/police/entrance.png",
+        "url": "",
+        "index": 27
+    },
+    {
+        "name": "巡视违规登记",
+        "image": "/static/images/index/police/report.png",
+        "url": "",
+        "index": 29
+    },
+    {
+        "name": "每日巡诊",
+        "image": "/static/images/index/police/dailyvisit.png",
+        "url": "",
+        "index": 30
+    },
+    {
+        "name": "购物确认",
+        "image": "/static/images/index/police/shopping.png",
+        "url": "",
+        "index": 35
+    },
+    {
+        "name": "信息查询",
+        "image": "/static/images/index/police/prisonerInfo.png",
+        "url": "",
+        "index": 36
+    },
+    {
+        "name": "消息通知",
+        "image": "/static/images/index/police/prisonerInfo.png",
+        "url": "",
+        "index": 37
+    }
+]

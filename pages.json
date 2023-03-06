@@ -1,0 +1,65 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index/index",
+      "style": {
+        "navigationBarTitleText": "主页",
+        "app-plus": {
+          "bounce": "none",
+          "background": "#000",
+          "subNVues": [
+            {
+              "id": "livePusher",
+              "path": "pages/home/index/subnvue/livePusher",
+              "style": {
+                "background": "transparent"
+              }
+            },
+            {
+              "id": "aioRemoteVideo",
+              "path": "pages/home/index/subnvue/aioRemoteVideo",
+              "style": {
+                "background": "transparent"
+              }
+            },
+            {
+              "id": "aioPreviewVideo",
+              "path": "pages/home/index/subnvue/aioPreviewVideo",
+              "style": {
+                "background": "transparent"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "pages/police/fingerprint/fingerprint",
+      "style": {
+        "navigationBarTitleText": "民警指纹录入",
+        "app-plus": {
+          "bounce": "none"
+        }
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "pageOrientation": "landscape",
+    "rpxCalcBaseDeviceWidth": 1440
+  },
+  "condition": {
+    "current": 0,
+    "list": [
+      {
+        "name": "首页",
+        "path": "pages/home/index/index",
+        "query": "interval=4000&autoplay=false"
+      },
+      {
+        "name": "开发页面_st",
+        "path": "pages/home/index/index"
+      }
+    ]
+  }
+}

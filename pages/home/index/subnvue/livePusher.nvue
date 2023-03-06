@@ -1,0 +1,150 @@
+<template>
+	<div class="wrapper">
+		<live-pusher id="livePusher" class="live-pusher" whiteness="3" min-bitrate="100" :url="pushUrl"
+			:mode="livePusherMode" :style="livePushStyle"></live-pusher>
+	</div>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				// 推流地址
+				pushUrl: '',
+				// 推流视频模式，SD（标清）, HD（高清）, FHD（超清）
+				livePusherMode: uni.getStorageSync('livePusherMode'),
+				livePushStyle: {
+					width: '0',
+					height: '0'
+				},
+				pushContext: null
+			};
+		},
+		created() {
+			const vm = this;
+			uni.$on('live-push', data => {
+				switch (data.status) {
+					case 'start':
+						vm.pushUrl = data.url;
+						vm.startLivePush();
+						break;
+					case 'stop':
+						vm.stopLivePush();
+						break;
+					case 'startPre':
+						vm.setLivePushStyle(920, 480, 820, 420);
+						vm.startPreLivePush();
+						break;
+					case 'startIntercom':
+						vm.setLivePushStyle(700, 375, 1163, 288);
+						vm.startPreLivePush();
+						break;
+					case 'stopPre':
+						vm.stopPreLivePush();
+						break;
+					case 'snapshot':
+						vm.snapshot();
+						break;
+					case 'show':
+						this.setLivePushStyle(700, 375, 1163, 288);
+						break;
+					case 'hide':
+						this.setLivePushStyle(0, 0);
+						break;
+					default:
+						vm.isShow = false;
+						break;
+				}
+			});
+		},
+		onReady() {
+			this.pushContext = uni.createLivePusherContext('livePusher', this);
+		},
+		methods: {
+			startLivePush() {
+				this.pushContext.stop();
+				this.pushContext = uni.createLivePusherContext('livePusher', this);
+				this.startPushMethod();
+			},
+			startPushMethod() {
+				const vm = this;
+				this.pushContext.start({
+					success: res => {
+						console.log('开始推流');
+						uni.$emit('live-back', {
+							status: 'start'
+						});
+						uni.getCurrentSubNVue().hide('auto');
+					},
+					fail: err => {
+						console.log('推流失败:' + JSON.stringify(err));
+						setTimeout(() => {
+							this.startPushMethod();
+						}, 1500);
+					}
+				});
+			},
+			stopLivePush() {
+				this.pushContext.stop({
+					success: res => {
+						console.log('停止推流');
+						uni.$emit('live-back', {
+							status: 'stop'
+						});
+						uni.getCurrentSubNVue().hide('auto');
+					}
+				});
+			},
+			startPreLivePush() {
+				this.pushContext.startPreview({
+					success: res => {
+						console.log('开始预览');
+						uni.$emit('live-back', {
+							status: 'startPre'
+						});
+					}
+				});
+			},
+			stopPreLivePush() {
+				this.setLivePushStyle(0, 0);
+				this.pushContext.stopPreview({
+					success: res => {
+						console.log('停止预览');
+						uni.$emit('live-back', {
+							status: 'stopPre'
+						});
+					}
+				});
+			},
+			snapshot() {
+				let _this = this;
+				this.pushContext.snapshot({
+					success: e => {
+						uni.$emit('get-img-path', e.message.tempImagePath);
+					}
+				});
+			},
+			setLivePushStyle(w, h, l = 640, t = 320) {
+				this.livePushStyle = {
+					width: w + 'px',
+					height: h + 'px',
+					left: l + 'px',
+					top: t + 'px',
+				};
+			}
+		}
+	};
+</script>
+
+<style>
+	.wrapper {
+		position: relative;
+		background-color: transparent;
+	}
+
+	.live-pusher {
+		position: absolute;
+		left: 610px;
+		top: 280px;
+	}
+</style>

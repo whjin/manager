@@ -1,0 +1,24 @@
+<template>
+	<AioVideoView :target="aioPreviewTarget" style="width: 700;height: 375;left: 1163;top: 288;"></AioVideoView>
+</template>
+
+<script>
+	import {
+		mapState
+	} from 'vuex';
+
+	export default {
+		computed: {
+			...mapState({
+				// 本地对讲流
+				aioPreviewTarget: state => state.app.aioPreviewTarget,
+			})
+		},
+		created() {
+			uni.getSubNVueById('aioPreviewVideo').hide();
+		},
+	};
+</script>
+
+<style>
+</style>

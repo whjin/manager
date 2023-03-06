@@ -1,0 +1,193 @@
+.prisonerInfo-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  .prisonerInfo-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    .prisonerInfo-title {
+      height: 64upx;
+      display: flex;
+      align-items: center;
+      padding-left: 27.77upx;
+      text {
+        color: #35fffa;
+        font-size: 27.77upx;
+        font-weight: bold;
+      }
+    }
+    .prisonerInfo-box-scroll {
+      height: 506upx;
+      box-sizing: border-box;
+      .prisonerInfo-list {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 27.77upx;
+        .prisonerInfo-item {
+          margin: 0 17.88upx 12upx 0;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .item-image-box {
+            width: 112upx;
+            height: 128upx;
+            box-sizing: border-box;
+            border: 1upx solid #00c6ff;
+            border-radius: 4upx;
+            box-shadow: inset 0 0 5upx 5upx rgba(25, 106, 190, 0.5);
+            position: relative;
+            padding: 6.88upx;
+            image {
+              width: 100%;
+              height: 100%;
+            }
+            .item-mark {
+              position: absolute;
+              top: 0;
+              left: 4.68upx;
+              .nation-red,
+              .nation-blue {
+                width: 24upx;
+                height: 24upx;
+                font-size: 14upx;
+                font-weight: bold;
+                color: #fff;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #e82727;
+              }
+              .nation-blue {
+                background-color: #007aff;
+              }
+            }
+            .triangle-red,
+            .triangle-blue {
+              width: 0;
+              height: 0;
+              border-left: 12upx solid transparent;
+              border-right: 12upx solid transparent;
+              border-top: 12upx solid #e82727;
+              border-bottom: 12upx solid transparent;
+            }
+            .triangle-blue {
+              border-top: 12upx solid #007aff;
+            }
+          }
+          .item-name {
+            display: inline-block;
+            width: 112upx;
+            text-align: center;
+            font-size: 18.05upx;
+            color: #fff;
+            white-space: nowrap;
+            overflow: auto;
+          }
+        }
+      }
+    }
+  }
+  .neil-modal-container {
+    .prisonerInfo-modal-box {
+      width: 926upx;
+      height: 558upx;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      .modal-header {
+        height: 61.11upx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 27.77upx;
+        .modal-title {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          color: #fff;
+          font-size: 22.22upx;
+          font-weight: 500;
+          text {
+            color: #35fffa;
+          }
+        }
+      }
+      .prisonerInfo-modal-content {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 27.77upx 0 0 27.77upx;
+        .prisonerInfo-detail-box {
+          display: flex;
+          .detail-image {
+            width: 176upx;
+            height: 216upx;
+            box-sizing: border-box;
+            border: 1upx solid #00c6ff;
+            border-radius: 4upx;
+            box-shadow: inset 0 0 5upx 5upx rgba(25, 106, 190, 0.5);
+            padding: 6.88upx;
+            image {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .detail-content {
+            display: flex;
+            flex: 1;
+            box-sizing: border-box;
+            flex-wrap: wrap;
+            margin-left: 27.77upx;
+            .detail-cell {
+              height: 32upx;
+              display: flex;
+              margin-bottom: 16upx;
+              margin-right: 42upx;
+              box-sizing: border-box;
+              text,
+              input {
+                height: 100%;
+                color: #fff;
+                font-size: 16upx;
+                display: flex;
+                align-items: center;
+              }
+              text {
+                width: 100upx;
+                justify-content: flex-end;
+              }
+              input {
+                width: 200upx;
+                border: 1upx solid #00c6ff;
+                border-radius: 4upx;
+                box-shadow: inset 0 0 5upx 5upx rgba(25, 106, 190, 0.5);
+                padding-left: 6.88upx;
+                color: #35fffa;
+              }
+              .detail-row {
+                width: 548upx;
+              }
+            }
+          }
+        }
+      }
+      .prisonerInfo-button {
+        display: flex;
+        justify-content: center;
+        margin-top: 13.88upx;
+        .btn-confirm {
+          width: 111.11upx;
+          height: 43.05upx;
+          font-size: 18.05upx;
+          text-align: center;
+          font-weight: 500;
+          line-height: 45upx;
+          border-radius: 2.77upx;
+          background: rgba(0, 122, 255, 0.99);
+          border: 0.69upx solid rgba(0, 122, 255, 0.99);
+          color: #fff;
+        }
+      }
+    }
+  }
+}

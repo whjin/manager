@@ -1,0 +1,100 @@
+@import './unitConfig.less';
+
+.inside-border {
+  box-shadow: 0px 0px 6px 0px rgb(27, 146, 239) inset;
+  background: rgba(27, 146, 239, 0.25);
+  border: #1b92ef 1px solid;
+  border-radius: 4px;
+}
+
+.form {
+  width: 100%;
+  box-sizing: border-box;
+
+  &.cushion {
+    .px2upx(margin-bottom, 300);
+  }
+
+  .form-row {
+    .px2upx(margin-bottom, 20);
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .form-col {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+
+      &.col-2 {
+        flex: 2;
+
+        .input {
+          .px2upx(width, 862);
+        }
+      }
+
+      &.hid {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .fields {
+        flex: 1;
+        .px2upx(height, 52);
+        .px2upx(line-height, 52);
+        text-align: end;
+        .px2upx(font-size, 26);
+
+        &.req {
+          .text {
+            position: relative;
+            &::before {
+              position: absolute;
+              .px2upx(top, -10);
+              .px2upx(left, -16);
+              color: red;
+              content: '*';
+            }
+          }
+        }
+      }
+
+      .input,
+      .text-area {
+        .px2upx(padding-left, 20);
+        .px2upx(width, 340);
+        .px2upx(line-height, 52);
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        .px2upx(font-size, 26);
+        
+        &.lack-val {
+          border: 2px solid red;
+          box-shadow: none;
+        }
+      }
+
+      .input {
+        .px2upx(height, 52);
+        white-space: nowrap;
+      }
+
+      .text-area {
+        .px2upx(height, 104);
+      }
+
+      .form-label {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .label-text {
+          .px2upx(font-size, 26);
+        }
+      }
+    }
+  }
+}

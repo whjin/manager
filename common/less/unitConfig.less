@@ -1,0 +1,10 @@
+@upxBase: 1.44;
+@rpxBase: 2;
+
+.px2upx(@name, @px){
+  @{name}: @px / @upxBase * 1upx;
+}
+
+.px2rpx(@name, @px){
+  @{name}: @px * @rpxBase * 1rpx;
+}
