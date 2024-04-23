@@ -1,3 +1,3 @@
-# uniapp-manager-app
+# manager
 
 uniapp manager app
