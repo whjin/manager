@@ -89,7 +89,7 @@ export default {
         params.data = req;
       }
       let res = await Api.apiCall(this.request.type, this.request.api, params, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         this.resultList = res.data;
       }
     }

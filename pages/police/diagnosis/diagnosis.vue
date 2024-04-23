@@ -1,5 +1,5 @@
 <template>
-  <view class="diagnosis main-area" @click.stop="handlePageClick">
+  <view class="diagnosis main-area" @click.stop="handleHideResult">
     <view class="uni-flex page-title">
       <text>{{ title }}</text>
     </view>
@@ -21,18 +21,18 @@
       <!-- 开药/处方操作页 -->
       <view class="diagnosis-page" v-if="!showPrisonerList">
         <view class="tabs-list">
-          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page == curPage }"
+          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page === curPage }"
             @click="changeTab(tab.page)">
             <common-icons :iconType="tab.icon" size="39" color="#fff" />
             <text class="title">{{ tab.title }}</text>
           </view>
         </view>
         <view class="diagnosis-form">
-          <drugDelivery v-show="curPage == 1" ref="drugDelivery" :selectedPrisoner="selectedPrisoner"
+          <drugDelivery v-show="curPage === 1" ref="drugDelivery" :selectedPrisoner="selectedPrisoner"
             :personInfo="personInfo" :nowTimestamp="nowTimestamp" />
-          <prescribe v-show="curPage == 2" ref="prescribe" :selectedPrisoner="selectedPrisoner" :personInfo="personInfo"
+          <prescribe v-show="curPage === 2" ref="prescribe" :selectedPrisoner="selectedPrisoner" :personInfo="personInfo"
             :nowTimestamp="nowTimestamp" />
-          <view class="prescription" v-show="curPage == 3">
+          <view class="prescription" v-show="curPage === 3">
             <view class="head">
               <text v-for="i in recordConfig" :key="i.code" class="title">{{ i.title }}</text>
             </view>
@@ -41,14 +41,14 @@
                 <ul class="list" v-if="recordList && recordList.length && recordList[0]">
                   <li v-for="(record, index) in recordList" :key="record.prescribeNo" class="list-row">
                     <template v-for="(config) in recordConfig">
-                      <text v-if="config.code == 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
-                      <text v-else-if="config.code == 'name' || config.code == 'archivesNo' || config.code == 'sex'"
-                        :key="config.code + 0" class="list-col">{{ selectedPrisoner[config.code] }}</text>
-                      <text v-else-if="config.code == 'treatTime'" :key="config.code + 1" class="list-col">{{
+                      <text v-if="config.code === 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
+                      <text v-else-if="config.code === 'name' || config.code === 'archivesNo' || config.code === 'sex'"
+                        :key="config.code + '1'" class="list-col">{{ selectedPrisoner[config.code] }}</text>
+                      <text v-else-if="config.code === 'treatTime'" :key="config.code + '2'" class="list-col">{{
                         record[config.code] | dateFormatFilter }}</text>
-                      <text v-else-if="config.code == 'operate'" :key="config.code + 2" class="list-col check"
+                      <text v-else-if="config.code === 'operate'" :key="config.code + '3'" class="list-col check"
                         @click="handleCheckDetail(record)">查看详情</text>
-                      <text v-else :key="config.code + 3" class="list-col">{{ record[config.code] }}</text>
+                      <text v-else :key="config.code + '4'" class="list-col">{{ record[config.code] }}</text>
                     </template>
                   </li>
                 </ul>
@@ -193,7 +193,7 @@ export default {
     selectedRecordDetails() {
       let recipeList = []; // 处方列表
       let transfuseList = []; // 输液列表
-      if (this.selectedRecord.dataSource == '0') {
+      if (this.selectedRecord.dataSource === '0') {
         this.selectedRecord.outDate = this.recordDetail[0] && this.recordDetail[0].outDate || '';
         recipeList = this.recordDetail;
       } else {
@@ -225,17 +225,17 @@ export default {
       setIsDiagnosisPage: 'app/SET_ISDIAGNOSISPAFE',
     }),
     // 点击页面
-    handlePageClick(e) {
-      if (this.curPage == 1) {
+    handleHideResult(e) {
+      if (this.curPage === 1) {
         this.$refs.drugDelivery && this.$refs.drugDelivery.hideResult();
-      } else if (this.curPage == 2) {
+      } else if (this.curPage === 2) {
         this.$refs.prescribe && this.$refs.prescribe.hideResult();
       }
     },
     changeTab(page) {
-      if (this.curPage == page) return;
+      if (this.curPage === page) return;
       this.curPage = page;
-      if (page == 3) {
+      if (page === 3) {
         this.pageParam.pageIndex = 1;
         this.getRoundVisitsRecord();
       }
@@ -290,7 +290,7 @@ export default {
       if (res.state.code == 200) {
         let data = (res && res.data) || [];
         let total = (res.page && res.page.total) || 0;
-        if (this.pageParam.pageIndex == 1) {
+        if (this.pageParam.pageIndex === 1) {
           this.recordList = data;
         } else {
           this.recordList = this.recordList.concat(data);
@@ -303,7 +303,7 @@ export default {
     // 详情滚动触底回调
     handleSearchDataToLower() {
       if (this.recordList.length >= this.recordTotal) {
-        return this.$parent.handleShowToast("暂无更多数据", "center");
+        return this.$parent.handleShowToast("暂无更多数据");
       }
       this.pageParam.pageIndex += 1;
       this.getRoundVisitsRecord();
@@ -355,7 +355,7 @@ export default {
 <style lang="less" scoped>
 @import '@/common/less/form.less';
 @import '@/common/less/unitConfig.less';
-@import "@/common/less/neilModalHead.less";
+@import '@/common/less/neilModalHead.less';
 
 .inner-glow-box {
   padding: 10.84upx 20.84upx 20.84upx;

@@ -1,7 +1,7 @@
 const state = {
   // 当前页面
-  currentTab: 31,
-  // 指纹认证人员信息
+  currentTab: 1,
+  // 认证人员信息
   personInfo: {},
   // 播放组件显隐
   showPlayer: false,
@@ -35,7 +35,7 @@ const mutations = {
   SET_CURRENTTAB(state, num) {
     state.currentTab = num;
   },
-  // 指纹认证人员信息
+  // 认证人员信息
   SET_PERSONINFO(state, info) {
     state.personInfo = info;
   },

@@ -6,7 +6,30 @@
         "navigationBarTitleText": "主页",
         "app-plus": {
           "bounce": "none",
-          "background": "#000"
+          "background": "#000",
+          "subNVues": [
+            {
+              "id": "livePusher",
+              "path": "pages/home/index/subnvue/livePusher",
+              "style": {
+                "background": "transparent"
+              }
+            },
+            {
+              "id": "sipPreview",
+              "path": "pages/home/index/subnvue/sipPreview",
+              "style": {
+                "background": "transparent"
+              }
+            },
+            {
+              "id": "sipRemote",
+              "path": "pages/home/index/subnvue/sipRemote",
+              "style": {
+                "background": "transparent"
+              }
+            }
+          ]
         }
       }
     }
@@ -14,7 +37,7 @@
   "globalStyle": {
     "navigationStyle": "custom",
     "pageOrientation": "landscape",
-    "rpxCalcBaseDeviceWidth": 1440
+    "rpxCalcBaseDeviceWidth": 1040
   },
   "condition": {
     "current": 0,

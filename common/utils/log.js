@@ -127,7 +127,7 @@ function writeLog(params, encryption) {
  */
 function uploadLogFile(fileDate) {
   const baseUrl = uni.getStorageSync("baseUrl");
-  const terCode = uni.getStorageSync("managerInfo").managerCode;
+  const { managerCode: terCode } = uni.getStorageSync("managerInfo");
   uni.uploadFile({
     url: baseUrl + "terminal/testing/uploadTer", // 后端api接口
     filePath: `file:///storage/emulated/0/Android/data/com.gksc.manager/documents/app-log/${fileDate}log.text`, // log文件路径

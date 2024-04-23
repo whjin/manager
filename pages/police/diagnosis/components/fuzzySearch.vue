@@ -47,27 +47,27 @@ export default {
   },
   computed: {
     api () {
-      if (this.useFor == 'DiseaseType') {
+      if (this.useFor === 'DiseaseType') {
         return Api.police.diagnosis.getDiseaseType;
-      } else if (this.useFor == 'Special') {
+      } else if (this.useFor === 'Special') {
         return Api.police.diagnosis.getSpecial;
       } else {
         return Api.police.diagnosis.getDiseaseType;
       }
     },
     params () {
-      if (this.useFor == 'DiseaseType') {
+      if (this.useFor === 'DiseaseType') {
         return 'fieldName';
-      } else if (this.useFor == 'Special') {
+      } else if (this.useFor === 'Special') {
         return 'name';
       } else {
         return 'fieldName';
       }
     },
     name () {
-      if (this.useFor == 'DiseaseType') {
+      if (this.useFor === 'DiseaseType') {
         return 'diseaseName';
-      } else if (this.useFor == 'Special') {
+      } else if (this.useFor === 'Special') {
         return 'special';
       } else {
         return 'diseaseName';

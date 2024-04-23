@@ -1,14 +1,14 @@
 function getLocalFilePath(path) {
-    if (path.indexOf('_www') == 0 || path.indexOf('_doc') == 0 || path.indexOf('_documents') == 0 || path.indexOf('_downloads') == 0) {
+    if (path.indexOf('_www') === 0 || path.indexOf('_doc') === 0 || path.indexOf('_documents') === 0 || path.indexOf('_downloads') === 0) {
         return path
     }
-    if (path.indexOf('file://') == 0) {
+    if (path.indexOf('file://') === 0) {
         return path
     }
-    if (path.indexOf('/storage/emulated/0/') == 0) {
+    if (path.indexOf('/storage/emulated/0/') === 0) {
         return path
     }
-    if (path.indexOf('/') == 0) {
+    if (path.indexOf('/') === 0) {
         var localFilePath = plus.io.convertAbsoluteFileSystem(path)
         if (localFilePath !== path) {
             return localFilePath
@@ -45,8 +45,8 @@ function biggerThan(v1, v2) {
 
 export function pathToBase64(path) {
     return new Promise(function(resolve, reject) {
-        if (typeof window == 'object' && 'document' in window) {
-            if (typeof FileReader == 'function') {
+        if (typeof window === 'object' && 'document' in window) {
+            if (typeof FileReader === 'function') {
                 var xhr = new XMLHttpRequest()
                 xhr.open('GET', path, true)
                 xhr.responseType = 'blob'
@@ -78,7 +78,7 @@ export function pathToBase64(path) {
             img.src = path
             return
         }
-        if (typeof plus == 'object') {
+        if (typeof plus === 'object') {
             plus.io.resolveLocalFileSystemURL(getLocalFilePath(path), function(entry) {
                 entry.file(function(file) {
                     var fileReader = new plus.io.FileReader()
@@ -97,7 +97,7 @@ export function pathToBase64(path) {
             })
             return
         }
-        if (typeof wx == 'object' && wx.canIUse('getFileSystemManager')) {
+        if (typeof wx === 'object' && wx.canIUse('getFileSystemManager')) {
             wx.getFileSystemManager().readFile({
                 filePath: path,
                 encoding: 'base64',
@@ -116,7 +116,7 @@ export function pathToBase64(path) {
 
 export function base64ToPath(base64) {
     return new Promise(function(resolve, reject) {
-        if (typeof window == 'object' && 'document' in window) {
+        if (typeof window === 'object' && 'document' in window) {
             base64 = base64.split(',')
             var type = base64[0].match(/:(.*?);/)[1]
             var str = atob(base64[1])
@@ -134,11 +134,11 @@ export function base64ToPath(base64) {
             reject(new Error('base64 error'))
         }
         var fileName = getNewFileId() + '.' + extName
-        if (typeof plus == 'object') {
+        if (typeof plus === 'object') {
             var basePath = '_doc'
             var dirPath = 'uniapp_temp'
             var filePath = basePath + '/' + dirPath + '/' + fileName
-            if (!biggerThan(plus.os.name == 'Android' ? '1.9.9.80627' : '1.9.9.80472', plus.runtime.innerVersion)) {
+            if (!biggerThan(plus.os.name === 'Android' ? '1.9.9.80627' : '1.9.9.80472', plus.runtime.innerVersion)) {
                 plus.io.resolveLocalFileSystemURL(basePath, function(entry) {
                     entry.getDirectory(dirPath, {
                         create: true,
@@ -176,7 +176,7 @@ export function base64ToPath(base64) {
             })
             return
         }
-        if (typeof wx == 'object' && wx.canIUse('getFileSystemManager')) {
+        if (typeof wx === 'object' && wx.canIUse('getFileSystemManager')) {
             var filePath = wx.env.USER_DATA_PATH + '/' + fileName
             wx.getFileSystemManager().writeFile({
                 filePath: filePath,

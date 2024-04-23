@@ -2,12 +2,8 @@
 	<div class="main-container">
 		<div class="main-wrapper">
 			<header class="header">
-				<div class="header-left">
-					<h1 class="title">{{ mainTitle }}</h1>
-					<xfl-select class="xfl-select" :list="roomGroupList" :initValue="curRoomInfo.value" :clearable="false"
-						@change="selectRoomChange" :widthStyle="120" :placeholder="'请选择监室'"></xfl-select>
-				</div>
-				<div class="header-right" @touchstart.stop="goToTerminal">
+				<h1 class="title">{{ mainTitle }}</h1>
+				<div class="goto-btn-wrapper" @touchstart.stop="goToTerminal">
 					<div class="goto-btn">请登录进入</div>
 				</div>
 			</header>
@@ -21,7 +17,7 @@
 						<i class="right-bottom corner-icon"></i>
 						<ul class="scroll-list police-list">
 							<li class="scroll-item" v-for="(item, index) in policeList" :key="item.id">
-								<i v-if="index == 0" class="responsibility-icon" :style="{ 'background-color': '#91E3F7' }"></i>
+								<i v-if="index === 0" class="responsibility-icon" :style="{ 'background-color': '#91E3F7' }"></i>
 								<span class="type">{{ item.type + "：" }}</span>
 								<scroll-view class="list-of-persons" style="width: 95upx" scroll-x="true">
 									<div class="list-details">
@@ -67,8 +63,7 @@
 				<!-- 监室人员列表 -->
 				<div class="left-bottom-box">
 					<ul class="people-counting-list">
-						<li class="people-counting-item inner-glow-box" v-for="item in peopleCountingList" :key="item.code"
-							@click="checkPersonDetails(item)">
+						<li class="people-counting-item inner-glow-box" v-for="item in peopleCountingList" :key="item.code" @click="checkPersonDetails(item)">
 							<span class="type">{{ item.type }}</span>
 							<span class="num-list">
 								<span class="num" v-for="(i, index) in item.numList" :key="index">{{ i }}</span>
@@ -83,26 +78,26 @@
 									<div class="person-details" v-for="i in item" :key="i.rybh">
 										<view class="img-box inner-glow-box">
 											<image class="img" :src="i.imgUrl"></image>
-											<div class="responsibility-box" v-if="i.isRotator ||
-												i.isMajorillness ||
-												i.isSickMeal
-												">
+											<div class="responsibility-box" v-if="
+                          i.isRotator ||
+                          i.isMajorillness ||
+                          i.isSickMeal
+                        ">
 												<i class="responsibility-icon" v-if="i.isRotator" :style="{ 'background-color': '#FFBA00' }"></i>
-												<i class="responsibility-icon" v-if="i.isMajorillness"
-													:style="{ 'background-color': '#4CC35A' }"></i>
+												<i class="responsibility-icon" v-if="i.isMajorillness" :style="{ 'background-color': '#4CC35A' }"></i>
 												<i class="responsibility-icon" v-if="i.isSickMeal" :style="{ 'background-color': '#0E6DE9' }"></i>
 											</div>
 											<div class="nation-icon" v-if="i.isMinority || i.isForeigner">
 												<div class="nation" :style="{
-													'background-color':
-														i.isForeigner ? '#E82727' : '#007AFF',
-												}">
+                            'background-color':
+                              i.isForeigner ? '#E82727' : '#007AFF',
+                          }">
 													{{ i.isForeigner ? "外" : "少" }}
 												</div>
 												<div class="triangle" :class="{
-													'triangle-red': i.isForeigner,
-													'triangle-blue': i.isMinority,
-												}"></div>
+                            'triangle-red': i.isForeigner,
+                            'triangle-blue': i.isMinority,
+                          }"></div>
 											</div>
 										</view>
 										<text class="name">{{ i.xm }}</text>
@@ -129,11 +124,8 @@
 						</ul>
 					</div>
 					<div class="video-box">
-						<video :src="videoUrl" id="roomVideo" codec="software" autoplay :controls="false"
-							style="width: 0px; height: 0px" object-fit="fill"
-							@fullscreenclick="handleFullscreenchange('roomVideo', false)"></video>
-						<div class="video-btn" v-for="item in videoList" :key="item.id"
-							@touchstart.stop="handleFullscreenchange(item.id, true)">
+						<video :src="videoUrl" id="roomVideo" codec="software" autoplay :controls="false" style="width: 0px; height: 0px" object-fit="fill" @fullscreenclick="handleFullscreenchange('roomVideo', false)"></video>
+						<div class="video-btn" v-for="item in videoList" :key="item.id" @touchstart.stop="handleFullscreenchange(item.id, true)">
 							<image class="video-image" :src="item.imgSrc"></image>
 							<div class="title">{{ item.title }}</div>
 						</div>
@@ -159,22 +151,22 @@
 
 <script>
 import Api from "@/common/api.js";
+import Log from "@/common/utils/log.js";
 import { mapMutations } from "vuex";
 import commonIcons from "@/components/common-icons/common-icons.vue";
-import xflSelect from "@/components/xfl-select/xfl-select.vue";
 import neilModal from "@/components/neil-modal/neil-modal.vue";
 import myTable from "@/components/myTable/myTable.vue";
+
 import { dateFormat } from "@/common/utils/util.js";
 
 export default {
 	name: "Main",
 	components: {
 		commonIcons,
-		xflSelect,
 		neilModal,
 		myTable
 	},
-	data() {
+	data () {
 		return {
 			isShowDetails: false,
 			detailsType: 'sickMeal',
@@ -345,19 +337,18 @@ export default {
 				},
 			],
 			videoUrl: "../../../static/video/defaultVideo.mp4",
+			roomId: uni.getStorageSync("managerInfo").roomId,
 			notForeignerArr: ['156', '158', '344', '446'],
 			minorityArr: ['01', '57', '58'],
-			// 一对多监室列表
-			roomGroupList: [],
-			// 当前监室信息
-			curRoomInfo: uni.getStorageSync("managerInfo"),
 		};
 	},
 	computed: {
-		mainTitle() {
-			return uni.getStorageSync("managerInfo").areaName || "";
+		mainTitle () {
+			let areaName = uni.getStorageSync("managerInfo").areaName || "";
+			let roomName = uni.getStorageSync("managerInfo").roomName || "";
+			return `${areaName} ${roomName}`;
 		},
-		roomLevelTextColor() {
+		roomLevelTextColor () {
 			let style = {
 				"background-image": "-webkit-linear-gradient(#35fffa, #007aff)",
 			};
@@ -372,30 +363,30 @@ export default {
 			}
 			return style;
 		},
-		detailsTitle() {
-			if (this.detailsType == 'sickMeal') {
+		detailsTitle () {
+			if (this.detailsType === 'sickMeal') {
 				return '病号餐人员';
 			} else {
 				return '少数民族';
 			}
 		},
-		detailsHeader() {
-			if (this.detailsType == 'sickMeal') {
+		detailsHeader () {
+			if (this.detailsType === 'sickMeal') {
 				return this.sickMealHeader;
 			} else {
 				return this.minorityHeader;
 			}
 		},
-		detailsContent() {
-			if (this.detailsType == 'sickMeal') {
+		detailsContent () {
+			if (this.detailsType === 'sickMeal') {
 				return this.sickMealList;
 			} else {
 				return this.minorityList;
 			}
 		}
 	},
-	mounted() {
-		this.getMainData();
+	mounted () {
+		this.initData();
 	},
 	methods: {
 		...mapMutations({
@@ -404,15 +395,9 @@ export default {
 			// 保存视频播放信息
 			saveVideoInfo: "app/SET_VIDEOINFO",
 		}),
-		getMainData(state = false) {
-			const { terminalId, roomId } = uni.getStorageSync("managerInfo");
-			this.getRoomGroupList(terminalId);
-			this.getRoomPolicesList(roomId);
-			this.getRoomPrisonerList(roomId);
-			this.getRoomDeviceList(roomId, state);
-		},
 		// 刷新首页数据
-		refreshMainData(state) {
+		refreshData (showTips) {
+			Log.writeLog("首页数据刷新", false);
 			// 退出全屏
 			let videoContext = uni.createVideoContext("roomVideo");
 			videoContext.exitFullScreen();
@@ -420,34 +405,39 @@ export default {
 			this.$nextTick(() => {
 				videoContext.stop();
 			});
-			this.getMainData(state);
+			this.initData(showTips);
 		},
-		// 获取所有监室
-		async getRoomGroupList(terminalId) {
-			let res = await Api.apiCall("get", Api.main.getRoomGroupInfo + terminalId, null);
-			if (res.state.code == 200) {
-				this.roomGroupList = res.data;
-				if (this.roomGroupList.length) {
-					this.roomGroupList.map(item => {
-						item.value = item.roomName;
-					});
-				}
+		goToTerminal () {
+			this.$parent.countTimer();
+			this.setCurrentTab(2);
+		},
+		// 视频全屏
+		handleFullscreenchange (id, isFullScreen) {
+			this.saveVideoInfo({ id: "roomVideo", isFullScreen });
+			let videoContext = uni.createVideoContext("roomVideo");
+			if (isFullScreen) {
+				Log.writeLog("点击查看监控视频", false);
+				this.videoList.map((item) => {
+					if (item.id === id) {
+						this.videoUrl = item.videoUrl;
+						return item;
+					}
+				});
+				this.$nextTick(() => {
+					videoContext.requestFullScreen();
+				});
+			} else {
+				Log.writeLog("点击退出查看监控视频", false);
+				videoContext.exitFullScreen();
+				this.videoUrl = "../../../static/video/defaultVideo.mp4";
+				this.$nextTick(() => {
+					videoContext.stop();
+				});
 			}
 		},
-		// 选择监室
-		selectRoomChange(event) {
-			const { originItem } = event;
-			this.curRoomInfo = originItem;
-			this.$parent.setManagerStorage(originItem);
-			this.getMainData();
-		},
-		goToTerminal() {
-			this.$parent.countTimer();
-			this.setCurrentTab(32);
-		},
 		// 获取管教人员
-		async getRoomPolicesList(roomId) {
-			let res = await Api.apiCall("get", Api.main.getRoomPolices + roomId, null);
+		async getRoomPolices () {
+			let res = await Api.apiCall("get", Api.main.getRoomPolices + this.roomId, null, true);
 			if (res.state.code == 200) {
 				this.resetPoliceData();
 				this.$nextTick(() => {
@@ -458,7 +448,7 @@ export default {
 					if (roomSupervisor && roomSupervisor.name) {
 						this.policeList
 							.find((i) => {
-								return i.code == "roomSupervisor";
+								return i.code === "roomSupervisor";
 							})
 							.name.push(`${roomSupervisor.name.substr(0, 1)}警官`);
 					}
@@ -468,7 +458,7 @@ export default {
 						coordinatingPolice.forEach((item) => {
 							this.policeList
 								.find((i) => {
-									return i.code == "coordinatingPolice";
+									return i.code === "coordinatingPolice";
 								})
 								.name.push(`${item.name.substr(0, 1)}警官`);
 						});
@@ -477,19 +467,22 @@ export default {
 			}
 		},
 		// 获取在押人员
-		async getRoomPrisonerList(roomId) {
+		async getRoomPrisonerInfo () {
 			let params = {
-				data: { roomId },
+				data: {
+					roomId: this.roomId,
+				},
 				pageParam: {
 					pageIndex: 1,
 					pageSize: 50,
 				},
 			};
-			let res = await Api.apiCall("post", Api.main.getRoomPrisonerInfo, params);
+			let res = await Api.apiCall("post", Api.main.getRoomPrisonerInfo, params, true);
 			if (res.state.code == 200) {
 				this.resetPrisonerData();
 				this.$nextTick(() => {
 					let data = res.data;
+					if (!data.length) return;
 					let personList = [];
 					let cellPersonnelList = [];
 					let peopleCountingConfig = {
@@ -504,15 +497,15 @@ export default {
 					data.map((item, index) => {
 						// 轮值、重大疾病、病号餐人员列表
 						this.watchkeeperList.map((i) => {
-							if (i.code == 'majorillness' && Number(item[i.code]) == 1) {
+							if (i.code === 'majorillness' && Number(item[i.code]) === 1) {
 								item.isMajorillness = true;
 								i.name.push(item.xm);
-							} else if (i.code == 'sickMeal' && Number(item.mealStartTime)) {
+							} else if (i.code === 'sickMeal' && Number(item.mealStartTime)) {
 								item.isSickMeal = true;
 								item.mealStartTime = dateFormat('YYYY-MM-DD hh:mm:ss', new Date(item.mealStartTime));
 								item.mealEndTime = dateFormat('YYYY-MM-DD hh:mm:ss', new Date(item.mealEndTime));
 								i.name.push(item.xm);
-							} else if (i.code == 'rotator' && Number(item[i.code])) {
+							} else if (i.code === 'rotator' && Number(item[i.code])) {
 								item.isRotator = true;
 								i.name.push(item.xm);
 							}
@@ -520,7 +513,7 @@ export default {
 						});
 						// 风险人员列表
 						this.wantedCriminalList.map((i) => {
-							if (Number(item.fxdj) == i.level) {
+							if (Number(item.fxdj) === i.level) {
 								i.name.push(item.xm);
 							}
 							return i;
@@ -535,7 +528,7 @@ export default {
 						// 监仓人员头像列表
 						personList.push(item);
 						let num = index + 1;
-						if (num % 14 == 0 || num == data.length) {
+						if (num % 14 === 0 || num === data.length) {
 							cellPersonnelList.push(personList);
 							personList = [];
 						}
@@ -555,9 +548,12 @@ export default {
 							peopleCountingConfig.sickMeal += 1;
 							this.sickMealList.push(item);
 						}
+
 						return item;
 					});
+
 					this.cellPersonnelList = cellPersonnelList;
+
 					// 人员统计列表
 					// 总人数
 					peopleCountingConfig.total = data.length;
@@ -577,11 +573,11 @@ export default {
 			}
 		},
 		// 获取视频
-		async getRoomDeviceList(roomId, state = false) {
-			let res = await Api.apiCall("get", Api.main.getRoomDeviceInfo + roomId, null);
+		async getRoomDeviceInfo (showTips = false) {
+			let res = await Api.apiCall("get", Api.main.getRoomDeviceInfo + this.roomId, null, true);
 			if (res.state.code == 200) {
 				// 刷新提示
-				if (state) {
+				if (showTips) {
 					this.$parent.handleShowToast("刷新成功！");
 				}
 				this.resetVideoData();
@@ -590,8 +586,8 @@ export default {
 					data.forEach((item) => {
 						let url = `rtsp://${item.userName}:${item.passwd}@${item.ip}:${item.url}`;
 						this.videoList.map((i) => {
-							if (Number(item.orderc) == i.orderc) {
-								i.videoUrl = `${url}subtype=1`;
+							if (Number(item.orderc) === i.orderc) {
+								i.videoUrl = `${url}102`;
 								return i;
 							}
 						});
@@ -599,30 +595,13 @@ export default {
 				});
 			}
 		},
-		// 视频全屏
-		handleFullscreenchange(id, isFullScreen) {
-			this.saveVideoInfo({ id: "roomVideo", isFullScreen });
-			let videoContext = uni.createVideoContext("roomVideo");
-			if (isFullScreen) {
-				this.videoList.map((item) => {
-					if (item.id == id) {
-						this.videoUrl = item.videoUrl;
-						return item;
-					}
-				});
-				this.$nextTick(() => {
-					videoContext.requestFullScreen();
-				});
-			} else {
-				videoContext.exitFullScreen();
-				this.videoUrl = "../../../static/video/defaultVideo.mp4";
-				this.$nextTick(() => {
-					videoContext.stop();
-				});
-			}
+		initData (showTips = false) {
+			this.getRoomPolices();
+			this.getRoomPrisonerInfo();
+			this.getRoomDeviceInfo(showTips);
 		},
 		// 重置民警数据
-		resetPoliceData() {
+		resetPoliceData () {
 			this.policeList = [
 				{
 					code: "roomSupervisor",
@@ -637,7 +616,7 @@ export default {
 			];
 		},
 		// 重置在押人员数据
-		resetPrisonerData() {
+		resetPrisonerData () {
 			this.watchkeeperList = [
 				{
 					code: "rotator",
@@ -696,7 +675,7 @@ export default {
 			this.minorityList = [];
 		},
 		// 重置视频数据
-		resetVideoData() {
+		resetVideoData () {
 			this.videoList = [
 				{
 					id: "my-video1",
@@ -712,16 +691,16 @@ export default {
 				},
 			];
 		},
-		replenishZero(num) {
+		replenishZero (num) {
 			return num < 10 ? "0" + num : "" + num;
 		},
-		checkPersonDetails(item) {
+		checkPersonDetails (item) {
 			this.detailsType = item.code;
-			if (this.detailsType == 'minority' || this.detailsType == 'sickMeal') {
+			if (this.detailsType === 'minority' || this.detailsType === 'sickMeal') {
 				this.isShowDetails = true;
 			}
 		},
-		handleDetailsClose() {
+		handleDetailsClose () {
 			this.isShowDetails = false;
 		}
 	},
@@ -730,5 +709,5 @@ export default {
 
 <style lang="less" scoped>
 @import '@/common/less/index.less';
-@import "@/common/less/neilModalHead.less";
+@import '@/common/less/neilModalHead.less';
 </style>

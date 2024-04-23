@@ -248,7 +248,7 @@ export default {
     handleFrequencyChange (e) {
       this.fillPrescription({
         detail: {
-          yypl: e.originItem.id
+          yypl: e.orignItem.id
         },
         index: e.rowIndex
       })
@@ -257,7 +257,7 @@ export default {
     handleUnitChange (e) {
       this.fillPrescription({
         detail: {
-          sydw: e.originItem.id
+          sydw: e.orignItem.id
         },
         index: e.rowIndex
       })
@@ -266,7 +266,7 @@ export default {
     handleGroupChange (e) {
       this.fillPrescription({
         detail: {
-          drugGroup: e.originItem.id
+          drugGroup: e.orignItem.id
         },
         index: e.rowIndex
       })

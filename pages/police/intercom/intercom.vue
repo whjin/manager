@@ -21,49 +21,48 @@
 							通话时间：<text>{{ talkCountTime }}</text>
 						</div>
 						<div class="manager-button" :class="{ 'manager-disabled': !openIntercom }">
-							<div class="button" @click="volumeControl">调节音量</div>
-							<div class="button" @click="handleVideoMute">
-								{{ isMute ? "关闭静音" : "开启静音" }}
-							</div>
-							<div class="button" @click="hangupIntercom">挂断</div>
+							<div class="button" @touchstart.stop="volumeControl">调节音量</div>
+							<div class="button" @touchstart.stop="handleVideoMute">{{ isMute ? "关闭静音" : "开启静音" }}</div>
+							<div class="button" @touchstart.stop="hangupIntercom">挂断</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="neil-modal-container">
-			<!-- 调节音量弹框 -->
-			<neil-modal :show="showVolume">
+			<!-- 监仓调节音量弹框 -->
+			<neil-modal :show="showIntercomVolume">
 				<div class="volume-modal-box">
 					<div class="modal-header">
-						<div class="modal-title">音量调节</div>
-						<div class="modal-close" @click="closeModal('Volume')">
+						<div class="modal-title">音量</div>
+						<div class="modal-close" @click="closeModal('IntercomVolume')">
 							<image src="/static/images/common/close.png"></image>
 						</div>
 					</div>
-					<div class="page-horizontal-divider"></div>
+					<div class="modal-horizontal-divider"></div>
 					<div class="volume-modal-content">
 						<div class="volume-modal-section">
 							<div class="volume-text">本机音量</div>
 							<common-icons type="iconvolume" size="32" color="#fff"></common-icons>
 							<div class="volume-slider">
-								<slider :value="managerVolume" min="0" max="100" show-value block-size="46" @change="setManagerVolume" />
+								<slider :value="managerVolume" max="5" show-value block-size="46"
+									@change="setManagerVolume" />
 							</div>
 						</div>
-						<div class="volume-modal-section" v-show="intercomInfo.id == 1">
+						<div class="volume-modal-section" v-if="intercomInfo.id">
 							<div class="volume-text">分机音量</div>
 							<common-icons type="iconvolume" size="32" color="#fff"></common-icons>
 							<div class="volume-slider">
-								<slider :value="terminalVolume" min="0" max="100" show-value block-size="46"
+								<slider :value="terminalVolume" max="20" show-value block-size="46"
 									@change="setTerminalVolume" />
 							</div>
 						</div>
 					</div>
 					<div class="volume-modal-btn">
-						<div class="cancel-btn" @click="closeModal('Volume')">
+						<div class="cancel-btn" @click="closeModal('IntercomVolume')">
 							<span>取消</span>
 						</div>
-						<div class="confirm-btn" @click="intercomVolume">
+						<div class="confirm-btn" @touchstart.stop="intercomVolume">
 							<span>确认</span>
 						</div>
 					</div>
@@ -76,7 +75,9 @@
 <script>
 import commonIcons from "@/components/common-icons/common-icons.vue";
 import neilModal from "@/components/neil-modal/neil-modal.vue";
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
+import Api from '@/common/api.js';
+import Log from "@/common/utils/log.js";
 import { showNum } from "@/common/utils/util.js";
 
 export default {
@@ -94,13 +95,11 @@ export default {
 			// 是否静音
 			isMute: false,
 			// 调节音量弹框
-			showVolume: false,
+			showIntercomVolume: false,
 			// 本机音量值
-			managerVolume: 20,
+			managerVolume: 5,
 			// 分机音量值
 			terminalVolume: 20,
-			// 禁止重复操作
-			isRepeatState: false,
 		};
 	},
 	computed: {
@@ -111,17 +110,18 @@ export default {
 			intercomName: (state) => state.app.intercomName,
 			// 视频对讲信息
 			intercomInfo: (state) => state.app.intercomInfo,
-		}),
+		})
 	},
 	mounted() {
 		// 通话计时
 		this.setTalkTime();
 	},
-	beforeDestroy() {
-		this.hangupIntercom();
-	},
-	beforeDestroy() {
+	destroyed() {
 		clearInterval(this.talkTimer);
+		this.showIntercomVolume = false;
+		this.hangupIntercom();
+		// 关闭静音
+		getApp().globalData.Sip.enableMic(1);
 		this.$parent.countTimer();
 	},
 	methods: {
@@ -139,33 +139,9 @@ export default {
 				this.talkCountTime = `${hours}:${minutes}:${seconds}`;
 			}, 1000);
 		},
-		// 挂断视频通话
-		hangupIntercom() {
-			if (!this.isRepeatState) {
-				this.isRepeatState = true;
-				setTimeout(() => {
-					this.isRepeatState = false;
-				}, 1500);
-				if (this.openIntercom) {
-					const { managerCode } = uni.getStorageSync("managerInfo");
-					if (this.intercomInfo.id == 0) {
-						// 挂断主机视频通话
-						const { controlCode } = uni.getStorageSync("managerInfo");
-						this.$parent.sendWebsocket(
-							`{maindevno:"${controlCode}",devno:"${managerCode}",type:"100",msg:"22"}`
-						);
-					} else {
-						// 挂断分机视频通话
-						const { terminalCode } = uni.getStorageSync("managerInfo");
-						this.$parent.sendWebsocket(
-							`{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"24"}`
-						);
-						let { masterSipAccount: masterNum, TerSipAccount: slaveNum } = uni.getStorageSync("managerInfo");
-						console.log(0, masterNum, slaveNum, 0);
-						getApp().globalData.FloatUniModule.nativeHangup(0, masterNum, slaveNum, 0);
-					}
-				}
-			}
+		// 清除通话时长定时器
+		stopTalkTimer() {
+			clearInterval(this.talkTimer);
 		},
 		// 设置本机音量进度条
 		setManagerVolume(e) {
@@ -175,49 +151,118 @@ export default {
 		setTerminalVolume(e) {
 			this.terminalVolume = e.detail.value;
 		},
-		// 音量调节弹框
+		// 获取本地|仓内屏音量
 		volumeControl() {
 			// 获取本地音量
-			getApp().globalData.FloatUniModule.getStreamVolumeTypeVoiceCall(e => {
-				this.managerVolume = e.value;
-				if (this.intercomInfo.id == 1) {
-					// 获取分机音量
-					const { managerCode } = uni.getStorageSync("managerInfo");
-					const { terminalCode } = uni.getStorageSync("managerInfo");
-					this.$parent.sendWebsocket(
-						`{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"8",extend:""}`
-					);
-				}
-				getApp().globalData.FloatUniModule.setTalkViewPosition(45, 220, 1, 1);
-				getApp().globalData.FloatUniModule.setLocalVideoViewPosition(1150, 220, 1, 1);
-				this.showVolume = true;
-			});
-		},
-		// 确认音量调节
-		intercomVolume() {
-			// 本机对讲音量调节
-			getApp().globalData.FloatUniModule.setStreamVolumeTypeVoiceCall(this.managerVolume);
-			if (this.intercomInfo.id == 1) {
-				// 分机音量调节
-				const { managerCode } = uni.getStorageSync("managerInfo");
-				const { terminalCode } = uni.getStorageSync("managerInfo");
-				this.$parent.sendWebsocket(
-					`{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"8",extend:"${this.terminalVolume}"}`
-				);
+			this.managerVolume = getApp().globalData.HarUtils.getVolume(0);
+			if (!!this.intercomInfo.id) {
+				// 获取仓内屏音量
+				this.getTerminalVolume();
 			}
-			this.closeModal("Volume");
+			uni.getSubNVueById("sipRemote").hide();
+			uni.getSubNVueById("sipPreview").hide();
+			this.showIntercomVolume = true;
+		},
+		// 音量调节确认
+		intercomVolume() {
+			// 关闭静音
+			if (getApp().globalData.Sip.enableMic(1) === 0) {
+				this.isMute = false;
+				console.log("关闭主机静音成功");
+				Log.writeLog("关闭主机静音成功", false);
+			} else {
+				console.log("关闭主机静音失败");
+				Log.writeLog("关闭主机静音失败", false);
+			}
+			// 本机对讲音量调节
+			getApp().globalData.HarUtils.setVolume(0, this.managerVolume);
+			if (!!this.intercomInfo.id) {
+				// 仓内屏音量调节
+				this.setDeviceVolume();
+			}
+			this.closeModal("IntercomVolume");
+		},
+		// 获取分机音量
+		async getTerminalVolume() {
+			const { embeddedIp: ip } = uni.getStorageSync("managerInfo");
+			let res = await Api.apiCall("get", Api.index.getTerminalVolume, { ip });
+			if (res.state.code == 200) {
+				this.terminalVolume = res.data;
+			}
+		},
+		// 设置分机音量
+		async setDeviceVolume() {
+			let params = {
+				ip: uni.getStorageSync("managerInfo").embeddedIp,
+				deviceVol: `0,${this.terminalVolume * 5}`,
+			};
+			let res = await Api.apiCall("get", Api.index.setDeviceVolume, params);
+			if (res.state.code == 200) {
+				this.$parent.handleShowToast("音量调节成功", "bottom", 5000);
+			}
 		},
 		// 设置静音
 		handleVideoMute() {
 			this.isMute = !this.isMute;
 			if (this.isMute) {
 				// 开启静音
-				getApp().globalData.FloatUniModule.setExtMicEna(false);
-				console.log("开启静音");
+				if (getApp().globalData.Sip.enableMic(0) === 0) {
+					console.log("设置主机静音成功");
+					Log.writeLog("设置主机静音成功", false);
+				} else {
+					console.log("设置主机静音失败");
+					Log.writeLog("设置主机静音失败", false);
+				}
 			} else {
 				// 关闭静音
-				getApp().globalData.FloatUniModule.setExtMicEna(true);
-				console.log("关闭静音");
+				if (getApp().globalData.Sip.enableMic(1) === 0) {
+					console.log("关闭主机静音成功");
+					Log.writeLog("关闭主机静音成功", false);
+				} else {
+					console.log("关闭主机静音失败");
+					Log.writeLog("关闭主机静音失败", false);
+				}
+			}
+		},
+		// 挂断视频通话
+		hangupIntercom() {
+			if (this.openIntercom) {
+				clearInterval(this.talkTimer);
+				let { managerCode } = uni.getStorageSync("managerInfo");
+				if (!this.intercomInfo.id) {
+					// 挂断主机视频通话
+					let { controlCode } = uni.getStorageSync("managerInfo");
+					this.$parent.sendWebsocket(
+						`{maindevno:"${controlCode}",devno:"${managerCode}",type:"100",msg:"22"}`);
+				} else {
+					// 挂断仓内屏视频通话
+					let { terminalCode } = uni.getStorageSync("managerInfo");
+					this.$parent.sendWebsocket(
+						`{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"24"}`);
+					let { TerSipAccount } = uni.getStorageSync("managerInfo");
+					if (getApp().globalData.Sip.hangup(TerSipAccount) === 0) {
+						console.log("SIP挂断成功");
+						Log.writeLog("SIP挂断成功", false);
+					} else {
+						console.log("SIP挂断失败");
+						Log.writeLog("SIP挂断失败", false);
+					}
+				}
+			}
+		},
+		// 挂断消息处理
+		hangupMsgHandler() {
+			let {managerCode} = uni.getStorageSync("managerInfo");
+			if (!this.intercomInfo.id) {
+				// 挂断主机视频通话
+				let { controlCode } = uni.getStorageSync("managerInfo");
+				this.$parent.sendWebsocket(
+					`{maindevno:"${controlCode}",devno:"${managerCode}",type:"100",msg:"22"}`);
+			} else {
+				// 挂断仓内屏视频通话
+				let { terminalCode } = uni.getStorageSync("managerInfo");
+				this.$parent.sendWebsocket(
+					`{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"24"}`);
 			}
 		},
 		openModal(type) {
@@ -225,10 +270,12 @@ export default {
 		},
 		closeModal(type) {
 			this[`show${type}`] = false;
-			this.$nextTick(() => {
-				getApp().globalData.FloatUniModule.setTalkViewPosition(45, 220, 1060, 710);
-				getApp().globalData.FloatUniModule.setLocalVideoViewPosition(1150, 220, 727, 460);
-			});
+			if (type == "IntercomVolume") {
+				if (this.openIntercom) {
+					uni.getSubNVueById("sipRemote").show();
+					uni.getSubNVueById("sipPreview").show();
+				}
+			}
 		},
 	},
 };

@@ -6,14 +6,14 @@
     <view class="uni-flex uni-flex-item" style="width: 100%; height: 85%">
       <view class="content-wrapper">
         <view class="tabs-list">
-          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page == curPage }"
+          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page === curPage }"
             @click="changeTab(tab.page)">
             <common-icons :iconType="tab.icon" size="39" color="#fff" />
             <text class="title">{{ tab.title }}</text>
           </view>
         </view>
         <view class="content">
-          <template v-if="curPage == 1">
+          <template v-if="curPage === 1">
             <view class="prisoner-list">
               <view class="select-all">
                 请选择在押人员：
@@ -49,14 +49,14 @@
                 <ul class="list" v-if="reportRecordList.length">
                   <li v-for="(record, index) in reportRecordList" :key="record.dateTime" class="list-row">
                     <template v-for="(config) in recordConfig">
-                      <text v-if="config.code == 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
-                      <text v-else-if="config.code == 'roomNo'" :key="config.code + 0" class="list-col">{{ roomName
+                      <text v-if="config.code === 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
+                      <text v-else-if="config.code === 'roomNo'" :key="config.code + '1'" class="list-col">{{ roomName
                       }}</text>
-                      <text v-else-if="config.code == 'dateTime'" :key="config.code + 1" class="list-col">{{
+                      <text v-else-if="config.code === 'dateTime'" :key="config.code + '2'" class="list-col">{{
                         record[config.code] | dateFormatFilter }}</text>
-                      <text v-else-if="config.code == 'operate'" :key="config.code + 2" class="list-col check"
+                      <text v-else-if="config.code === 'operate'" :key="config.code + '3'" class="list-col check"
                         @click="handleCheckDetail(record)">查看详情</text>
-                      <text v-else :key="config.code + 3" class="list-col">{{ record[config.code] }}</text>
+                      <text v-else :key="config.code + '4'" class="list-col">{{ record[config.code] }}</text>
                     </template>
                   </li>
                 </ul>
@@ -170,7 +170,7 @@ export default {
       return uni.getStorageSync("managerInfo").roomName;
     },
     isAllSelected() {
-      let allSelected = this.selectedPrisonerArr.length == this.cellPersonnelList.length;
+      let allSelected = this.selectedPrisonerArr.length === this.cellPersonnelList.length;
       return allSelected;
     },
   },
@@ -187,14 +187,14 @@ export default {
   methods: {
     changeTab(page) {
       this.curPage = page;
-      if (page == 1) {
+      if (page === 1) {
         this.selectedPrisonerArr = [];
         this.cellPersonnelList.map(item => {
           item.checked = false;
           return item;
         });
       }
-      if (page == 2) {
+      if (page === 2) {
         this.reportRecordList = [];
         this.pageParam.pageIndex = 1;
         this.getViolationRecord();
@@ -249,7 +249,7 @@ export default {
       if (res.state.code == 200) {
         let data = res.data || [];
         let total = (res.page && res.page.total) || 0;
-        if (this.pageParam.pageIndex == 1) {
+        if (this.pageParam.pageIndex === 1) {
           this.reportRecordList = data;
         } else {
           this.reportRecordList = this.reportRecordList.concat(data);
@@ -270,7 +270,7 @@ export default {
     // 详情滚动触底回调
     handleSearchDataToLower() {
       if (this.reportRecordList.length >= this.recordTotal) {
-        return this.$parent.handleShowToast("暂无更多数据", "center");
+        return this.$parent.handleShowToast("暂无更多数据");
       }
       this.pageParam.pageIndex += 1;
       this.getViolationRecord();
@@ -288,7 +288,7 @@ export default {
 
 <style lang="less" scoped>
 @import '@/common/less/unitConfig.less';
-@import "@/common/less/neilModalHead.less";
+@import '@/common/less/neilModalHead.less';
 
 .inside-border {
   box-shadow: 0px 0px 6px 0px rgb(27, 146, 239) inset;
@@ -492,4 +492,5 @@ export default {
   .px2upx(padding-left, 60);
   .px2upx(padding-right, 60);
   .px2upx(width, 800);
-}</style>
+}
+</style>

@@ -1,0 +1,45 @@
+<template>
+	<Sip-Remote ref="sipRemote" style="width: 996px;height: 598px;" @fullscreenchange="remoteFullScreen"></Sip-Remote>
+</template>
+
+<script>
+export default {
+	created() {
+		const _this = this;
+		uni.getSubNVueById('sipRemote').hide();
+		uni.$on('set-sipRemote', () => {
+			_this.$refs.sipRemote.setFullScreen();
+		});
+		uni.$on('resize-sipRemote', () => {
+			_this.$refs.sipRemote.setMiniScreen();
+		});
+	},
+	onUnload() {
+		uni.$off('set-sipRemote');
+		uni.$off('resize-sipRemote');
+	},
+	methods: {
+		remoteFullScreen(e) {
+			if (e.detail.isFullScreen) {
+				uni.getSubNVueById('sipPreview').hide();
+				uni.getSubNVueById('sipRemote').setStyle({
+					top: '0',
+					left: '0',
+					width: '1920',
+					height: '1080'
+				});
+			} else {
+				uni.getSubNVueById('sipPreview').show();
+				uni.getSubNVueById('sipRemote').setStyle({
+					top: '288px',
+					left: '60px',
+					width: '996',
+					height: '598'
+				});
+			}
+		}
+	}
+};
+</script>
+
+<style></style>
