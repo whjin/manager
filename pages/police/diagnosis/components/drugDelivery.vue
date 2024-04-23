@@ -348,7 +348,7 @@ export default {
       let res = await Api.apiCall('post', Api.police.diagnosis.drugDelivery, params, true);
       this.medicineRecipeParams = [];
       this.$refs.prescriptionList && this.$refs.prescriptionList.clearList();
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         uni.showToast({
           title: res.data || '药品出库成功！',
           position: 'center',

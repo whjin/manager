@@ -10,36 +10,14 @@
     border-radius: 4px;
     box-shadow: inset 0upx 0upx 5upx 5upx rgba(25, 106, 190, 0.5);
   }
-
   .responsibility-icon {
     width: 11.12upx;
     height: 6.95upx;
     border-radius: 2px;
   }
-
   .main-wrapper {
     width: 100%;
     box-sizing: border-box;
-
-    .goto-btn-wrapper {
-      position: absolute;
-      right: 60px;
-      top: 10.42upx;
-      padding: 0 0 208.3upx 69.45upx;
-
-      .goto-btn {
-        padding: 11.806upx 13.9upx;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
-        color: #fff;
-        font-size: 19.5upx;
-        background-color: #3396ff;
-        border-radius: 4px;
-      }
-    }
-
     .header {
       position: relative;
       padding: 0 41.67upx;
@@ -49,19 +27,44 @@
       justify-content: space-between;
       align-items: center;
       box-sizing: border-box;
-
-      .title {
-        margin: 0;
-        padding: 0;
-        font-size: 33.34upx;
-        font-weight: 600;
-        background-image: -webkit-linear-gradient(#35fffa, #007aff);
-        -webkit-text-fill-color: transparent;
-        -webkit-background-clip: text;
-        letter-spacing: 3upx;
+      .header-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        .title {
+          margin: 0 13.88upx 0 0;
+          font-size: 33.34upx;
+          font-weight: 600;
+          background-image: -webkit-linear-gradient(#35fffa, #007aff);
+          -webkit-text-fill-color: transparent;
+          -webkit-background-clip: text;
+          letter-spacing: 3upx;
+        }
+        .xfl-select {
+          border-radius: 6upx;
+        }
+        .show-box {
+          position: relative;
+        }
+      }
+      .header-right {
+        position: absolute;
+        right: 60px;
+        top: 10.42upx;
+        padding: 0 0 208.3upx 69.45upx;
+        .goto-btn {
+          padding: 11.806upx 13.9upx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          color: #fff;
+          font-size: 19.5upx;
+          background-color: #3396ff;
+          border-radius: 4px;
+        }
       }
     }
-
     .contents {
       padding: 0 41.67upx;
       display: flex;
@@ -69,22 +72,18 @@
       align-items: flex-start;
       flex-wrap: wrap;
       box-sizing: border-box;
-
       .scroll-list {
         padding: 0;
-
         .scroll-item {
           display: flex;
           justify-content: flex-start;
           align-items: center;
           font-size: 0;
           color: #fff;
-
           .type {
             font-size: 15.28upx;
             opacity: 0.65;
           }
-
           .list-of-persons {
             flex: 1;
             overflow: hidden;
@@ -97,7 +96,6 @@
           }
         }
       }
-
       .left-top-box {
         margin-bottom: 10upx;
         padding: 17.362upx;
@@ -109,42 +107,34 @@
         background: url("../../static/images/main/left-top-box.png") no-repeat;
         background-size: cover;
         box-sizing: border-box;
-
         .watchkeeper {
           padding: 0 13.89upx;
           width: 416.67upx;
           height: 187.5upx;
           box-sizing: border-box;
-
           .police-list {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #414a6d;
-
             .scroll-item {
               padding: 13.89upx 0;
-
               .type {
                 width: 105upx;
                 text-align: end;
               }
-
               .list-details {
                 font-size: 15.28upx;
               }
             }
           }
-
           .watchkeeper-list {
             .scroll-item {
               padding: 13.89upx 0;
               border-bottom: 1px solid #414a6d;
-
               &:last-child {
                 border-bottom: none;
               }
-
               .type {
                 width: 105upx;
                 text-align: end;
@@ -152,13 +142,11 @@
             }
           }
         }
-
         .wanted-criminal {
           padding: 0 13.89upx;
           width: 347.23upx;
           height: 187.5upx;
           box-sizing: border-box;
-
           .wanted-criminal-list {
             .scroll-item {
               padding: 13.89upx 0;
@@ -166,7 +154,6 @@
             }
           }
         }
-
         .corner-box {
           position: relative;
           background: linear-gradient(
@@ -174,7 +161,6 @@
             rgba(19, 31, 86, 0.22),
             rgba(12, 51, 128, 0.22)
           );
-
           .corner-icon {
             position: absolute;
             display: inline-block;
@@ -183,28 +169,24 @@
             border: 2px solid #00c6ff;
             box-sizing: border-box;
           }
-
           .left-top {
             left: 0;
             top: 0;
             border-right: none;
             border-bottom: none;
           }
-
           .left-bottom {
             left: 0;
             bottom: 0;
             border-right: none;
             border-top: none;
           }
-
           .right-top {
             right: 0;
             top: 0;
             border-left: none;
             border-bottom: none;
           }
-
           .right-bottom {
             right: 0;
             bottom: 0;
@@ -213,7 +195,6 @@
           }
         }
       }
-
       .left-bottom-box {
         padding: 25.7upx 17.37upx 17.37upx;
         width: 819.45upx;
@@ -222,7 +203,6 @@
           no-repeat;
         background-size: cover;
         box-sizing: border-box;
-
         .people-counting-list {
           margin-bottom: 20.84upx;
           padding: 0;
@@ -230,19 +210,16 @@
           justify-content: space-between;
           align-items: flex-end;
           color: #fff;
-
           .people-counting-item {
             padding: 6.95upx 6.95upx;
             display: flex;
             justify-content: center;
             align-items: flex-end;
             box-sizing: border-box;
-
             .type {
               width: 32upx;
               font-size: 15.28upx;
             }
-
             .num-list {
               margin: 0 6.95upx;
               display: flex;
@@ -250,7 +227,6 @@
               align-items: center;
               font-size: 30.6upx;
               font-weight: bold;
-
               .num {
                 margin-right: 3.473upx;
                 width: 23.62upx;
@@ -259,30 +235,25 @@
                 background-position-y: center;
                 background-size: contain;
                 text-align: center;
-
                 &:last-child {
                   margin-right: 0;
                 }
               }
             }
-
             .unit {
               font-size: 15.28upx;
             }
           }
         }
-
         .list-of-cell-personnel {
           .swiper {
             height: 284.73upx;
-
             .swiper-item {
               padding: 0 1px;
               display: flex;
               justify-content: flex-start;
               align-items: center;
               flex-wrap: wrap;
-
               .person-details {
                 margin-left: 18.75upx;
                 margin-bottom: 6.95upx;
@@ -290,24 +261,20 @@
                 justify-content: center;
                 align-items: center;
                 flex-direction: column;
-
                 &:nth-child(1),
                 &:nth-child(8) {
                   margin-left: 0;
                 }
-
                 .img-box {
                   padding: 10.417upx;
                   position: relative;
                   width: 95.84upx;
                   height: 108.4upx;
                   box-sizing: border-box;
-
                   .img {
                     width: 100%;
                     height: 100%;
                   }
-
                   .responsibility-box {
                     position: absolute;
                     bottom: 0;
@@ -319,17 +286,14 @@
                     align-items: center;
                     background-color: #000;
                     border-radius: 4px;
-
                     .responsibility-icon {
                       margin: 0 5.21upx;
                     }
                   }
-
                   .nation-icon {
                     position: absolute;
                     left: 4.17upx;
                     top: 0;
-
                     .nation {
                       width: 20.84upx;
                       display: flex;
@@ -338,19 +302,16 @@
                       font-size: 13.9upx;
                       box-sizing: border-box;
                     }
-
                     .triangle {
                       width: 0;
                       height: 0;
                     }
-
                     .triangle-red {
                       border-top: 6.95upx solid #e82727;
                       border-bottom: 6.95upx solid transparent;
                       border-left: 10.417upx solid transparent;
                       border-right: 10.417upx solid transparent;
                     }
-
                     .triangle-blue {
                       width: 0;
                       height: 0;
@@ -361,7 +322,6 @@
                     }
                   }
                 }
-
                 .name {
                   margin: 6.95upx 0;
                   width: 95.84upx;
@@ -376,7 +336,6 @@
           }
         }
       }
-
       .right-top-box {
         margin-bottom: 10upx;
         display: flex;
@@ -388,7 +347,6 @@
         background: url("../../static/images/main/right-top-box.png") no-repeat;
         background-size: cover;
         box-sizing: border-box;
-
         .title {
           margin: 0;
           padding: 0;
@@ -399,7 +357,6 @@
           letter-spacing: 3upx;
         }
       }
-
       .right-bottom-box {
         padding: 25.7upx 20upx 17.37upx;
         width: 416.67upx;
@@ -408,23 +365,18 @@
           no-repeat;
         background-size: cover;
         box-sizing: border-box;
-
         .dynamic-box {
           box-sizing: border-box;
           padding: 0 10.417px;
           border-bottom: 4px solid #00c6ff;
-
           .title {
             font-size: 22.23upx;
             color: #3795ff;
           }
-
           .dynamic-list {
             margin-bottom: 10.417upx;
-
             .scroll-item {
               padding: 9upx 0;
-
               .num {
                 margin: 0 17.362upx;
                 padding: 3.473upx 13.89upx;
@@ -435,13 +387,11 @@
             }
           }
         }
-
         .video-box {
           margin-top: 30upx;
           display: flex;
           justify-content: center;
           align-items: center;
-
           .video-btn {
             margin: 0 17.36upx;
             width: 139upx;
@@ -453,12 +403,10 @@
             background-image: url("../../static/images/main/video-background.png");
             background-repeat: no-repeat;
             background-size: cover;
-
             .video-image {
               width: 48.61upx;
               height: 48.61upx;
             }
-
             .title {
               margin-top: 5upx;
               font-size: 20upx;
@@ -469,7 +417,6 @@
       }
     }
   }
-
   .video-status-tips {
     width: 318.06upx;
     height: 145.84upx;

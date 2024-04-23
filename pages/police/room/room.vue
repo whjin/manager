@@ -6,11 +6,14 @@
       </view>
       <view class="uni-flex uni-flex-item" style="height: 85%">
         <view class="uni-flex uni-column page-menu-area">
-          <view class="uni-flex uni-column page-menu" :class="currentPage == 1 ? 'page-menu-activate' : ''" @click="switchPage(1)">
-            <image src="/static/images/room/out.png" style="width: 46.52upx; height: 46.52upx; margin-top: 15.97upx"></image>
+          <view class="uni-flex uni-column page-menu" :class="currentPage == 1 ? 'page-menu-activate' : ''"
+            @click="switchPage(1)">
+            <image src="/static/images/room/out.png" style="width: 46.52upx; height: 46.52upx; margin-top: 15.97upx">
+            </image>
             <text style="line-height: 20.83upx; margin-top: 13.19upx">外出监室\n登记</text>
           </view>
-          <view class="uni-flex uni-column page-menu" :class="currentPage == 2 ? 'page-menu-activate' : ''" @click="switchPage(2)">
+          <view class="uni-flex uni-column page-menu" :class="currentPage == 2 ? 'page-menu-activate' : ''"
+            @click="switchPage(2)">
             <image src="/static/images/room/in.png" style="
                 width: 75.69upx;
                 height: 46.52upx;
@@ -19,17 +22,19 @@
               "></image>
             <text style="line-height: 20.83upx; margin-top: 13.19upx">返回监室\n登记</text>
           </view>
-          <view class="uni-flex uni-column page-menu" :class="currentPage == 3 ? 'page-menu-activate' : ''" @click="switchPage(3)">
-            <image src="/static/images/room/record.png" style="width: 35.41upx; height: 42.36upx; margin-top: 9.72upx"></image>
+          <view class="uni-flex uni-column page-menu" :class="currentPage == 3 ? 'page-menu-activate' : ''"
+            @click="switchPage(3)">
+            <image src="/static/images/room/record.png" style="width: 35.41upx; height: 42.36upx; margin-top: 9.72upx">
+            </image>
             <text style="line-height: 20.83upx; margin-top: 13.19upx">进出监室\n记录</text>
           </view>
         </view>
         <view class="page-vertical-divider"></view>
-        <view v-if="currentPage == 1 ? true : false" class="uni-flex uni-column uni-flex-item" style="width: 1039.58upx; margin-left: 54.16upx">
+        <view v-if="currentPage == 1 ? true : false" class="uni-flex uni-column uni-flex-item"
+          style="width: 1039.58upx; margin-left: 54.16upx">
           <view class="uni-flex">
-            <view class="describe" style="width: 136.8upx">{{
-              roomInfo.roomName
-            }}</view>
+            <view class="describe" style="width: 136.8upx">
+              {{ roomInfo.roomName }}</view>
             <view class="describe" style="width: 209.02upx">关押人数：{{ totalNum }}人</view>
             <view class="describe" style="width: 325.69upx">外出人数：{{ outlNum }}人</view>
             <view class="describe" style="width: 370upx; text-align: right">责任教官：{{ roomInfo.policeName }}</view>
@@ -41,19 +46,21 @@
               background: #00c6ff;
               margin-top: 11.8upx;
             "></view>
-          <scroll-view scroll-y="true" @scrolltolower="prisonerLoadLower" class="uni-flex uni-row" style="width: 1040upx; flex-direction: row; height: 460upx">
+          <scroll-view scroll-y="true" @scrolltolower="prisonerLoadLower" class="uni-flex uni-row"
+            style="width: 1040upx; flex-direction: row; height: 460upx">
             <view class="uni-flex" style="flex-wrap: wrap">
-              <view class="symptoms" v-for="(item, index) in prisonerInfoList" :key="index" :style="index % 5 == 0 ? '' : 'margin-left: 46upx;'">
+              <view class="symptoms" v-for="(item, index) in prisonerInfoList" :key="index"
+                :style="index % 5 == 0 ? '' : 'margin-left: 46upx;'">
                 <view class="uni-flex" style="margin-top: 20upx; margin-left: 25.69upx">
-                  <image :src="
-                      item.zp == undefined
-                        ? '/static/images/room/none.jpg'
-                        : item.zp
+                  <image :src="item.zp == undefined
+                    ? '/static/images/room/none.jpg'
+                    : item.zp
                     " style="width: 121.52upx; height: 118.75upx"></image>
                 </view>
                 <view class="uni-flex text-describe">姓名：{{ item.name }}</view>
                 <view class="uni-flex text-describe">编号：{{ item.code }}</view>
-                <view class="uni-flex button" @click="openModal('out', index, item)" style="margin-left: 23.83upx; margin-top: 11.8upx">
+                <view class="uni-flex button" @click="openModal('out', index, item)"
+                  style="margin-left: 23.83upx; margin-top: 11.8upx">
                   <view style="
                       line-height: 18.05upx;
                       font-size: 18.05upx;
@@ -64,11 +71,11 @@
             </view>
           </scroll-view>
         </view>
-        <view v-if="currentPage == 2 ? true : false" class="uni-flex uni-column uni-flex-item" style="width: 1039.58upx; margin-left: 54.16upx">
+        <view v-if="currentPage == 2 ? true : false" class="uni-flex uni-column uni-flex-item"
+          style="width: 1039.58upx; margin-left: 54.16upx">
           <view class="uni-flex">
-            <view class="describe" style="width: 136.8upx">{{
-              roomInfo.roomName
-            }}</view>
+            <view class="describe" style="width: 136.8upx">
+              {{ roomInfo.roomName }}</view>
             <view class="describe" style="width: 209.02upx">关押人数：{{ totalNum }}人</view>
             <view class="describe" style="width: 325.69upx">外出人数：{{ outlNum }}人</view>
             <view class="describe" style="width: 370upx; text-align: right">责任民警：{{ roomInfo.policeName }}</view>
@@ -80,14 +87,15 @@
               background: #00c6ff;
               margin-top: 11.8upx;
             "></view>
-          <scroll-view scroll-y="true" @scrolltolower="outPrisonerLoadLower" class="uni-flex uni-row" style="width: 1040upx; flex-direction: row; height: 460upx">
+          <scroll-view scroll-y="true" @scrolltolower="outPrisonerLoadLower" class="uni-flex uni-row"
+            style="width: 1040upx; flex-direction: row; height: 460upx">
             <view class="uni-flex" style="flex-wrap: wrap">
-              <view class="symptoms" v-for="(item, index) in outPrisonerInfoList" :key="index" :style="index % 5 == 0 ? '' : 'margin-left: 46upx;'">
+              <view class="symptoms" v-for="(item, index) in outPrisonerInfoList" :key="index"
+                :style="index % 5 == 0 ? '' : 'margin-left: 46upx;'">
                 <view class="uni-flex" style="margin-top: 20upx; margin-left: 25.69upx">
-                  <image :src="
-                      item.zp == undefined
-                        ? '/static/images/room/none.jpg'
-                        : item.zp
+                  <image :src="item.zp == undefined
+                    ? '/static/images/room/none.jpg'
+                    : item.zp
                     " style="width: 121.52upx; height: 118.75upx"></image>
                 </view>
                 <view class="uni-flex text-describe">姓名：{{ item.name }}</view>
@@ -107,15 +115,18 @@
             </view>
           </scroll-view>
         </view>
-        <view v-if="currentPage == 3 ? true : false" class="uni-flex uni-column uni-flex-item" style="width: 1039.58upx; margin-left: 54.16upx">
+        <view v-if="currentPage == 3 ? true : false" class="uni-flex uni-column uni-flex-item"
+          style="width: 1039.58upx; margin-left: 54.16upx">
           <view class="uni-flex">
             <view class="describe" style="margin-left: 20.83upx">在押人员：</view>
             <view style="margin-left: 37.5upx">
-              <xfl-select ref="selectPrisonerNo" :clearable="false" :showItemNum="4" :list="prisonerSearchList" :placeholder="'请选择在押人员'" @change="prisonerChangeSearch"></xfl-select>
+              <xfl-select ref="selectPrisonerNo" :clearable="false" :showItemNum="4" :list="prisonerSearchList"
+                :placeholder="'请选择在押人员'" @change="prisonerChangeSearch"></xfl-select>
             </view>
             <view class="describe" style="margin-left: 137.5upx">外出原因：</view>
             <view style="margin-left: 37.5upx">
-              <xfl-select ref="outTypeList" :clearable="false" :showItemNum="4" :list="outReasonList" :placeholder="'请选择原因'" @change="outReasonChangeSearch"></xfl-select>
+              <xfl-select ref="outTypeList" :clearable="false" :showItemNum="4" :list="outReasonList"
+                :placeholder="'请选择原因'" @change="outReasonChangeSearch"></xfl-select>
             </view>
           </view>
 
@@ -141,18 +152,18 @@
                 <view class="uni-flex-item table-th" style="flex: 1.5">返回时间</view>
                 <view class="uni-flex-item table-th table-th-radius-tr">负责民警</view>
               </view>
-              <scroll-view scroll-y="true" @scrolltolower="accessRecordLoadLower" class="uni-flex-item uni-flex uni-column">
-                <view id="tbody" class="uni-flex table-td-divider" v-for="(item, index) in accessRecordInfoList" :key="index">
+              <scroll-view scroll-y="true" @scrolltolower="accessRecordLoadLower"
+                class="uni-flex-item uni-flex uni-column">
+                <view id="tbody" class="uni-flex table-td-divider" v-for="(item, index) in accessRecordInfoList"
+                  :key="index">
                   <view class="uni-flex-item table-td">{{ index + 1 }}</view>
                   <view class="uni-flex-item table-td">{{ item.name }}</view>
                   <view class="uni-flex-item table-td">{{ item.code }}</view>
                   <view class="uni-flex-item table-td">{{ item.outType }}</view>
-                  <view class="uni-flex-item table-td" style="flex: 1.5">{{
-                    item.outTime
-                  }}</view>
-                  <view class="uni-flex-item table-td" style="flex: 1.5">{{
-                    item.backTime
-                  }}</view>
+                  <view class="uni-flex-item table-td" style="flex: 1.5">
+                    {{ item.outTime }}</view>
+                  <view class="uni-flex-item table-td" style="flex: 1.5">
+                    {{ item.backTime }}</view>
                   <view class="uni-flex-item table-td">{{ item.police }}</view>
                 </view>
               </scroll-view>
@@ -171,7 +182,8 @@
           <view class="page-horizontal-divider"></view>
           <view v-if="currentPage == 1">
             <view class="uni-flex" style="font-size: 20.83upx; margin: 43.05upx 0upx 0upx 157.63upx">外出原因：
-              <xfl-select ref="clearSelect" :clearable="false" :showItemNum="4" :list="outReasonList" @change="outReasonChange"></xfl-select>
+              <xfl-select ref="clearSelect" :clearable="false" :showItemNum="4" :list="outReasonList"
+                @change="outReasonChange"></xfl-select>
             </view>
           </view>
           <view class="uni-flex symptoms" style="
@@ -180,10 +192,9 @@
               margin: 33.33upx 0upx 0upx 250.91upx;
               justify-content: center;
             ">
-            <image :src="
-                outer.zp == undefined
-                  ? '/static/images/room/none.jpg'
-                  : outer.zp
+            <image :src="outer.zp == undefined
+              ? '/static/images/room/none.jpg'
+              : outer.zp
               " style="width: 137.5upx; height: 134.72upx; margin-top: 15upx"></image>
           </view>
           <view class="uni-flex modal-text">姓名：{{ outer.name }}</view>
@@ -193,7 +204,8 @@
           <view v-if="currentPage == 2">
             <view class="uni-flex modal-text">外出原因：{{ outer.outType }}</view>
           </view>
-          <view class="uni-flex button" @click="takeOut(outer)" style="background: #007aff; margin: 45.13upx 0upx 0upx 297.91upx">
+          <view class="uni-flex button" @click="takeOut(outer)"
+            style="background: #007aff; margin: 45.13upx 0upx 0upx 297.91upx">
             <view style="font-size: 20.83upx; margin-top: 5upx">{{
               currentPage == 1 ? "带出" : "带回"
             }}</view>
@@ -220,7 +232,7 @@ export default {
     neilModal,
     ePicker,
   },
-  data () {
+  data() {
     return {
       outType: {},
       outer: {},
@@ -255,13 +267,13 @@ export default {
       backDateTime: "",
     };
   },
-  created () {
+  created() {
     this.setBottomBar(false);
     let managerInfo = uni.getStorageSync("managerInfo");
     this.getCheckInfo(managerInfo);
     this.getOutReasonList();
   },
-  destroyed () {
+  destroyed() {
     this.takeOutConfirm = false;
   },
   methods: {
@@ -269,7 +281,7 @@ export default {
       // 设置状态栏显隐
       setBottomBar: "app/SET_BOTTOMBAR",
     }),
-    async getCheckInfo (managerInfo) {
+    async getCheckInfo(managerInfo) {
       let res = await Api.apiCall("get", Api.mutual.getRoomInfo + "/" + managerInfo.roomId, null, true);
       if (res.state.code == 200) {
         this.roomInfo = res.data;
@@ -277,7 +289,7 @@ export default {
         this.loadPrisonerInfo();
       }
     },
-    async getPrisonerNum () {
+    async getPrisonerNum() {
       let params = {
         data: {
           id: this.roomInfo.roomId,
@@ -295,7 +307,7 @@ export default {
         this.loadPrisonerInfo();
       }
     },
-    async loadPrisonerInfo () {
+    async loadPrisonerInfo() {
       let params = {
         data: {
           roomId: this.roomInfo.roomId,
@@ -323,7 +335,7 @@ export default {
         this.loadOutPrisonerInfo();
       }
     },
-    async loadOutPrisonerInfo () {
+    async loadOutPrisonerInfo() {
       let params = {
         data: {
           roomId: this.roomInfo.roomId,
@@ -345,20 +357,20 @@ export default {
         this.outPrisonerInfoList = this.outPrisonerInfoList.concat(res.data);
       }
     },
-    async getOutReasonList () {
+    async getOutReasonList() {
       let code = "SYS_OUT_TYPE";
       let res = await Api.apiCall("get", Api.police.face.getDictionaryTypeList + "/" + code, null, true);
       if (res.state.code == 200) {
         this.outReasonList = res.data;
       }
     },
-    outReasonChange ({ newVal, oldVal, index, orignItem }) {
-      this.selectOutReason = orignItem.code;
+    outReasonChange({ newVal, oldVal, index, originItem }) {
+      this.selectOutReason = originItem.code;
     },
-    outTypeChange ({ newVal, oldVal, index, orignItem }) {
-      this.outType = orignItem;
+    outTypeChange({ newVal, oldVal, index, originItem }) {
+      this.outType = originItem;
     },
-    async takeOut (item) {
+    async takeOut(item) {
       if (this.currentPage == 2) {
         this.submitBack();
       } else {
@@ -389,7 +401,7 @@ export default {
         }
       }
     },
-    async submitBack () {
+    async submitBack() {
       if (!this.isSubmitDisable) {
         this.isSubmitDisable = true;
         let params = {
@@ -408,30 +420,30 @@ export default {
         }, 2000);
       }
     },
-    reloadPrisonerInfo () {
+    reloadPrisonerInfo() {
       this.prisonerInfoList = [];
       this.prisonerInfoPageIndex = 1;
       this.prisonerInfoPageSize = 15;
       this.prisonerInfoPageLoadFlag = true;
       this.loadPrisonerInfo();
     },
-    openModal (type, index, item) {
+    openModal(type, index, item) {
       this.selectOutReason = "";
       this.takeOutConfirm = true;
       this.outer = item;
       this.outPrisoner = item;
       this.outIndex = index;
     },
-    closeModal (type) {
+    closeModal(type) {
       this.takeOutConfirm = false;
     },
-    prisonerChangeSearch ({ newVal, oldVal, index, orignItem }) {
-      this.selectPrisonerId = orignItem.code;
+    prisonerChangeSearch({ newVal, oldVal, index, originItem }) {
+      this.selectPrisonerId = originItem.code;
     },
-    outReasonChangeSearch ({ newVal, oldVal, index, orignItem }) {
-      this.outReasonSearch = orignItem.code;
+    outReasonChangeSearch({ newVal, oldVal, index, originItem }) {
+      this.outReasonSearch = originItem.code;
     },
-    searchRecord () {
+    searchRecord() {
       this.accessRecordInfoList = [];
       this.accessRecordPageIndex = 1;
       this.accessRecordPageSize = 8;
@@ -444,10 +456,10 @@ export default {
     bindBackDateTime: function (e) {
       this.backDateTime = e;
     },
-    getPolice ({ newVal, oldVal, index, orignItem }) {
-      this.personnelItem.responsiblePolice = orignItem.code;
+    getPolice({ newVal, oldVal, index, originItem }) {
+      this.personnelItem.responsiblePolice = originItem.code;
     },
-    switchPage (page) {
+    switchPage(page) {
       this.currentPage = page;
       if (page == 1) {
         this.selectOutReason = "";
@@ -468,14 +480,14 @@ export default {
         this.loadAccessRecord();
       }
     },
-    reloadOutPrisonerInfo () {
+    reloadOutPrisonerInfo() {
       this.outPrisonerInfoList = [];
       this.prisonerInfoPageIndex = 1;
       this.prisonerInfoPageSize = 15;
       this.prisonerInfoPageLoadFlag = true;
       this.loadOutPrisonerInfo();
     },
-    async getPrisonerSearchList () {
+    async getPrisonerSearchList() {
       let res = await Api.apiCall("get", Api.access.getAllPrisonerByJsh + "/" + this.roomInfo.roomNo, null, true);
       if (res.state.code == 200) {
         this.prisonerSearchList = res.data;
@@ -486,7 +498,7 @@ export default {
         this.loadAccessRecord();
       }
     },
-    async loadAccessRecord () {
+    async loadAccessRecord() {
       let outDateTime = "";
       let backDateTime = "";
       if (!isNullStr(this.outDateTime)) {
@@ -521,18 +533,22 @@ export default {
         this.accessRecordInfoList = this.accessRecordInfoList.concat(res.data);
       }
     },
-    clearRegister () {
+    clearRegister() {
       this.selectPrisonerId = "";
       this.outReasonSearch = "";
       this.outDateTime = "";
       this.backDateTime = "";
     },
   },
-  mounted () { },
+  mounted() { },
 };
 </script>
 
 <style>
+.show-box {
+  position: relative;
+}
+
 .describe {
   height: 20.13upx;
   font-size: 20.83upx;
@@ -586,6 +602,7 @@ export default {
   font-size: 18.05upx;
   line-height: 36.11upx;
 }
+
 .account-operateing-ok {
   background: rgba(0, 122, 255, 0.99);
   border: rgba(0, 122, 255, 0.99) 0.69upx solid;
@@ -598,10 +615,12 @@ export default {
   border-radius: 2.77upx;
   float: right;
 }
-#thead > view {
+
+#thead>view {
   text-align: center;
 }
-#tbody > view {
+
+#tbody>view {
   text-align: center;
 }
 </style>

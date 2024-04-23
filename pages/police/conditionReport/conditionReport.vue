@@ -1,18 +1,19 @@
 <template>
-  <view class="condition-report main-area" @touchstart.stop="handlePageClick">
+  <view class="condition-report main-area">
     <view class="uni-flex page-title">
       <text>{{ title }}</text>
     </view>
     <view class="uni-flex uni-flex-item" style="width: 100%; height: 85%">
       <view class="content-wrapper">
         <view class="tabs-list">
-          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page === curPage }" @click="changeTab(tab.page)">
+          <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page == curPage }"
+            @click="changeTab(tab.page)">
             <common-icons :iconType="tab.icon" size="39" color="#fff" />
             <text class="title">{{ tab.title }}</text>
           </view>
         </view>
         <view class="content">
-          <template v-if="curPage === 1">
+          <template v-if="curPage == 1">
             <view class="prisoner-list">
               <view class="select-all">
                 请选择在押人员：
@@ -25,10 +26,13 @@
               </view>
               <scroll-view scroll-y style="width: 100%; height: 450upx;">
                 <ul class="list">
-                  <li class="li" :class="{ 'inside-border': prisoner.checked }" v-for="(prisoner, index) in cellPersonnelList" :key="prisoner.rybh" @click="handleSelectedPrisoner(index)">
+                  <li class="li" :class="{ 'inside-border': prisoner.checked }"
+                    v-for="(prisoner, index) in cellPersonnelList" :key="prisoner.rybh"
+                    @click="handleSelectedPrisoner(index)">
                     <image class="img" :src="prisoner.imgUrl"></image>
                     <text class="name" :class="{ 'checked': prisoner.checked }">{{ prisoner.xm }}</text>
-                    <common-icons v-show="prisoner.checked" class="prisoner-checkbox" iconType="iconsuccess" size="24" color="#1296db" />
+                    <common-icons v-show="prisoner.checked" class="prisoner-checkbox" iconType="iconsuccess" size="24"
+                      color="#1296db" />
                   </li>
                 </ul>
               </scroll-view>
@@ -45,11 +49,14 @@
                 <ul class="list" v-if="reportRecordList.length">
                   <li v-for="(record, index) in reportRecordList" :key="record.dateTime" class="list-row">
                     <template v-for="(config) in recordConfig">
-                      <text v-if="config.code === 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
-                      <text v-else-if="config.code === 'roomNo'" :key="config.code" class="list-col">{{ roomName }}</text>
-                      <text v-else-if="config.code === 'dateTime'" :key="config.code" class="list-col">{{ record[config.code] | dateFormatFilter }}</text>
-                      <text v-else-if="config.code === 'operate'" :key="config.code" class="list-col check" @click="handleCheckDetail(record)">查看详情</text>
-                      <text v-else :key="config.code" class="list-col">{{ record[config.code] }}</text>
+                      <text v-if="config.code == 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
+                      <text v-else-if="config.code == 'roomNo'" :key="config.code + 0" class="list-col">{{ roomName
+                      }}</text>
+                      <text v-else-if="config.code == 'dateTime'" :key="config.code + 1" class="list-col">{{
+                        record[config.code] | dateFormatFilter }}</text>
+                      <text v-else-if="config.code == 'operate'" :key="config.code + 2" class="list-col check"
+                        @click="handleCheckDetail(record)">查看详情</text>
+                      <text v-else :key="config.code + 3" class="list-col">{{ record[config.code] }}</text>
                     </template>
                   </li>
                 </ul>
@@ -94,11 +101,11 @@ export default {
     reportForm,
     neilModal
   },
-  data () {
+  data() {
     return {
       title: '监室情况上报',
       curPage: 1,
-      roomId: uni.getStorageSync('managerInfo').roomId,
+      roomId: uni.getStorageSync("managerInfo").roomId,
       cellPersonnelList: [], // 人员列表
       tabConfig: [
         {
@@ -159,46 +166,42 @@ export default {
     };
   },
   computed: {
-    roomName () {
-      return uni.getStorageSync('managerInfo').roomName;
+    roomName() {
+      return uni.getStorageSync("managerInfo").roomName;
     },
-    isAllSelected () {
-      let allSelected = this.selectedPrisonerArr.length === this.cellPersonnelList.length;
+    isAllSelected() {
+      let allSelected = this.selectedPrisonerArr.length == this.cellPersonnelList.length;
       return allSelected;
     },
   },
 
   filters: {
-    dateFormatFilter (val) {
+    dateFormatFilter(val) {
       if (!val) return '无';
       return dateFormat('YYYY-MM-DD', new Date(val));
     },
   },
-  destroyed () {
+  destroyed() {
     this.isShowDetails = false;
   },
   methods: {
-    // 点击页面
-    handlePageClick () {
-      this.$parent.initCountTimer();
-    },
-    changeTab (page) {
+    changeTab(page) {
       this.curPage = page;
-      if (page === 1) {
+      if (page == 1) {
         this.selectedPrisonerArr = [];
         this.cellPersonnelList.map(item => {
           item.checked = false;
           return item;
         });
       }
-      if (page === 2) {
+      if (page == 2) {
         this.reportRecordList = [];
         this.pageParam.pageIndex = 1;
         this.getViolationRecord();
       }
     },
     // 获取在押人员
-    async getRoomPrisonerInfo () {
+    async getRoomPrisonerInfo() {
       let params = {
         data: {
           roomId: this.roomId
@@ -209,12 +212,12 @@ export default {
         }
       };
       let res = await Api.apiCall('post', Api.main.getRoomPrisonerInfo, params, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         this.cellPersonnelList = res.data;
       }
     },
     // 选择全部人
-    handleSelectedAll (evt) {
+    handleSelectedAll(evt) {
       if (!evt.detail.value.length) {
         this.cellPersonnelList.map(item => {
           item.checked = false;
@@ -230,23 +233,23 @@ export default {
       }
     },
     // 选择在押人员
-    handleSelectedPrisoner (index) {
+    handleSelectedPrisoner(index) {
       this.cellPersonnelList[index].checked = !this.cellPersonnelList[index].checked;
       this.selectedPrisonerArr = this.cellPersonnelList.filter(item => item.checked);
     },
     // 获取违规记录
-    async getViolationRecord () {
+    async getViolationRecord() {
       let params = {
         data: {
-          roomNo: uni.getStorageSync('managerInfo').roomNo
+          roomNo: uni.getStorageSync("managerInfo").roomNo
         },
         pageParam: this.pageParam
       };
       let res = await Api.apiCall('post', Api.police.conditionReport.getViolationRecord, params, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         let data = res.data || [];
         let total = (res.page && res.page.total) || 0;
-        if (this.pageParam.pageIndex === 1) {
+        if (this.pageParam.pageIndex == 1) {
           this.reportRecordList = data;
         } else {
           this.reportRecordList = this.reportRecordList.concat(data);
@@ -257,35 +260,35 @@ export default {
       }
     },
     // 点击查看详情
-    handleCheckDetail (record) {
+    handleCheckDetail(record) {
       this.selectedRecordDetails = record;
       this.isShowDetails = true;
     },
-    handleDetailsClose () {
+    handleDetailsClose() {
       this.isShowDetails = false;
     },
     // 详情滚动触底回调
-    handleSearchDataToLower () {
+    handleSearchDataToLower() {
       if (this.reportRecordList.length >= this.recordTotal) {
         return this.$parent.handleShowToast("暂无更多数据", "center");
       }
       this.pageParam.pageIndex += 1;
       this.getViolationRecord();
     },
-    init () {
+    init() {
       this.getRoomPrisonerInfo();
     }
   },
 
-  created () {
+  created() {
     this.init();
   },
-}
+};
 </script>
 
 <style lang="less" scoped>
 @import '@/common/less/unitConfig.less';
-@import '@/common/less/neilModalHead.less';
+@import "@/common/less/neilModalHead.less";
 
 .inside-border {
   box-shadow: 0px 0px 6px 0px rgb(27, 146, 239) inset;
@@ -302,9 +305,11 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
+
   .tabs-list {
     padding-right: 20.83upx;
     box-sizing: border-box;
+
     .tab {
       margin-bottom: 26.39upx;
       .px2upx(width, 160);
@@ -314,16 +319,20 @@ export default {
       align-items: center;
       flex-direction: column;
       background-color: #004b76;
+
       &.active {
         background-color: #007aff;
       }
+
       border-radius: 4px;
+
       .title {
         .px2upx(margin-top, 15);
         font-size: 18.06upx;
       }
     }
   }
+
   .content {
     .px2upx(padding-left, 40);
     width: 100%;
@@ -339,12 +348,14 @@ export default {
   .px2upx(margin-right, 40);
   flex: 1;
   border-right: 1px solid #00c6ff;
+
   .select-all {
     .px2upx(margin-bottom, 20);
     display: flex;
     .px2upx(font-size, 26);
     white-space: nowrap;
   }
+
   .list {
     padding: 0;
     width: 100%;
@@ -353,6 +364,7 @@ export default {
     align-items: center;
     flex-wrap: wrap;
     list-style: none;
+
     .li {
       .px2upx(margin-left, 40);
       .px2upx(margin-bottom, 40);
@@ -366,24 +378,29 @@ export default {
       flex-direction: column;
       border: 1px solid #4f81b3;
       box-sizing: border-box;
+
       &:nth-child(1),
       &:nth-child(5n + 1) {
         margin-left: 0;
       }
+
       .img {
         .px2upx(width, 130);
         .px2upx(height, 160);
       }
+
       .name {
         .px2upx(width, 80);
         .px2upx(font-size, 20);
         text-align: center;
         overflow: auto;
         white-space: nowrap;
+
         &.checked {
           color: #00c6ff;
         }
       }
+
       .prisoner-checkbox {
         position: absolute;
         bottom: 0;
@@ -396,16 +413,19 @@ export default {
 .swiper {
   width: 100%;
   height: 470upx;
+
   .swiper-item {
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
+
     &.cushion {
       .px2upx(padding-bottom, 300);
     }
   }
+
   &.small-swiper {
     height: 427upx;
   }
@@ -413,6 +433,7 @@ export default {
 
 .prescription {
   .px2upx(width, 1560);
+
   .head {
     width: 100%;
     .px2upx(height, 62);
@@ -423,18 +444,22 @@ export default {
     border-top-right-radius: 8px;
     background-color: rgba(17, 62, 141, 0.5);
     box-sizing: border-box;
+
     .title {
       flex: 1;
       text-align: center;
       .px2upx(font-size, 24);
+
       &.flex-2 {
         flex: 2;
       }
     }
   }
+
   .list {
     padding: 0;
     width: 100%;
+
     .list-row {
       width: 100%;
       .px2upx(height, 66);
@@ -443,6 +468,7 @@ export default {
       align-items: center;
       box-sizing: border-box;
       border-bottom: 1px solid rgba(17, 62, 141, 0.9);
+
       .list-col {
         .px2upx(padding-left, 20);
         .px2upx(padding-right, 20);
@@ -452,6 +478,7 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         .px2upx(font-size, 20);
+
         &.check {
           color: #35fffa;
           cursor: pointer;
@@ -465,5 +492,4 @@ export default {
   .px2upx(padding-left, 60);
   .px2upx(padding-right, 60);
   .px2upx(width, 800);
-}
-</style>
+}</style>

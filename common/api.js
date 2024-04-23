@@ -1,28 +1,12 @@
-const getDateTime = (time) => {
-  if (!time) return 0;
-  return new Date(time).getTime() + 8 * 60 * 60 * 1000;
-};
-
 export default {
-  BASEURL: "",
-  ESURI: "http://localhost:8081/api/",
-
-  /**
-   * 接口名称
-   */
-  /* 共有接口 得到 民警  名称，职务、监室号、等、字段，自行在接口中添加需要的字段*/
-  mutual: {
-    getRoomInfo: "terminal/common/getFaceRoomInfo",
-    upload: "terminal/pacFile/upload",
-  },
-  // 主页|在押人员
+  // 主页
   index: {
     // 获取APP配置菜单
     getAppModuleConf: "terminal/terAppModuleConf/getAppModuleConf",
     // 获取缓存信息
     getAllSetting: "terminal/terSetting/all",
     // 获取分机信息
-    getTerminalInfo: "terminal/terTerminalInfo/getTerminalByIp",
+    getTerminalByIp: "terminal/terTerminalInfo/getTerminalByIp",
     // 获取主机信息
     getControlInfo: "terminal/terControlInfo/getControlByCode",
     // 获取指纹认证在押人员信息
@@ -58,6 +42,9 @@ export default {
   },
   // 电子水牌页
   main: {
+    // 获取所有监室列表
+    getRoomGroupInfo:
+      "terminal/terTerminalGroup/findTerminalGroupInfoByManagerId?managerId=",
     // 管教人员
     getRoomPolices: "terminal/manager/getRoomPolices/",
     // 监室人员
@@ -67,10 +54,12 @@ export default {
   },
   // 民警模块
   police: {
+    // 刷卡（卡号）获取民警信息
+    getUserByCardNum: "terminal/sysUser/getUserByCardNum?cardNum=",
     // 获取预约人信息
     getPrisonerInfo: "terminal/access/api/getAllPrisonerByRoomId/",
-    // 1:N人脸识别，用于登录
-    faceRecognition1N: "terminal/faceRecognition/policeFaceOneToMany",
+    // 人脸识别民警登录
+    policeFaceOneToMany: "terminal/faceRecognition/policeFaceOneToMany",
     // 面对面管理
     face: {
       getDictionaryTypeList: "terminal/face/api/getDictionaryTypeList",
@@ -155,11 +144,18 @@ export default {
       // 根据姓名模糊查询
       getAllPrisoner: "terminal/odsPersonInfo/getRyByKeyword",
     },
-  },
-  // 在押人员
-  prisoner: {
-    // 1:N人脸识别，用于登录
-    faceRecognition1N: "arc/face/searchSuspectFaceCNP1_N",
+    // 监室事务提醒
+    schedule: {
+      // 获取监室事务信息
+      findReminder: "terminal/pacReminder/findReminder",
+    },
+    // 派药管理
+    medication: {
+      // 查询派药信息
+      listDrugDispense: "terminal/pacMDrugDispense/listDrugDispense",
+      // 保存派药信息
+      saveDrugDispense: "terminal/pacMDrugDispense/saveDrugDispense",
+    }
   },
   medication: {
     getRoomInfo: "terminal/terTerminalInfo/getRoomInfo",
@@ -172,21 +168,9 @@ export default {
     saveAccess: "terminal/access/api/saveAccess",
     accessRecord: "terminal/access/api/accessRecord",
   },
-
-  /**
-   * 接口测试
-   */
-  async testCall(method, data) {
-    const [err, res] = await uni.request({
-      url: "http://localhost:8100/terminal/pacOneLife/all",
-      data: {
-        data: {
-          uuid: "22222",
-        },
-      },
-      method: "get",
-    });
-    return res;
+  mutual: {
+    getRoomInfo: "terminal/common/getFaceRoomInfo",
+    upload: "terminal/pacFile/upload",
   },
 
   /**
@@ -262,7 +246,6 @@ export default {
         return result;
       }
     } else {
-      console.log("请先设置基础baseUrl！");
       this.handleShowToast("请先设置基础baseUrl！");
     }
   },
@@ -331,41 +314,10 @@ export default {
         return res;
       }
     } else {
-      console.log("请先设置基础baseUrl！");
       this.handleShowToast("请先设置基础baseUrl！");
     }
   },
 
-  /**
-   * 封装请求（async await 封装uni.request）
-   * method		post/get
-   * endpoint		接口方法名
-   * data			所需传递参数
-   * load			是否需要loading
-   */
-  async apiEsCall(method, endpoint, data, load) {
-    if (!load) {
-      uni.showLoading({
-        title: "请稍候",
-        mask: true,
-      });
-      uni.hideLoading();
-    }
-
-    let fullUrl = this.ESURI + endpoint;
-    let Authorization = "";
-    let [error, res] = await uni.request({
-      url: fullUrl,
-      data: data,
-      method: method,
-      dataType: "json",
-      header: {
-        "content-Type": "application/x-www-form-urlencoded",
-        Authorization: Authorization || "",
-      },
-    });
-    return res.data;
-  },
   // 消息提示
   handleShowToast(title, position = "bottom", duration = 1500) {
     uni.showToast({

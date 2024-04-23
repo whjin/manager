@@ -100,7 +100,7 @@ export default {
         }
       };
       let res = await Api.apiCall("post", Api.police.getNotificationInfo, params);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.totalPage = res.page.totalPage;
         let result = res.data;
         result.map(item => {
@@ -111,7 +111,6 @@ export default {
     },
     // 下拉刷新
     scrollToLower (e) {
-      // this.$parent.initCountTimeout();
       if (this.pageIndex < this.totalPage) {
         this.pageIndex++;
         switch (this.currentPage) {

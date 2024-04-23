@@ -47,27 +47,27 @@ export default {
   },
   computed: {
     api () {
-      if (this.useFor === 'DiseaseType') {
+      if (this.useFor == 'DiseaseType') {
         return Api.police.diagnosis.getDiseaseType;
-      } else if (this.useFor === 'Special') {
+      } else if (this.useFor == 'Special') {
         return Api.police.diagnosis.getSpecial;
       } else {
         return Api.police.diagnosis.getDiseaseType;
       }
     },
     params () {
-      if (this.useFor === 'DiseaseType') {
+      if (this.useFor == 'DiseaseType') {
         return 'fieldName';
-      } else if (this.useFor === 'Special') {
+      } else if (this.useFor == 'Special') {
         return 'name';
       } else {
         return 'fieldName';
       }
     },
     name () {
-      if (this.useFor === 'DiseaseType') {
+      if (this.useFor == 'DiseaseType') {
         return 'diseaseName';
-      } else if (this.useFor === 'Special') {
+      } else if (this.useFor == 'Special') {
         return 'special';
       } else {
         return 'diseaseName';
@@ -106,7 +106,7 @@ export default {
       }
       params.data[this.params] = val;
       let res = await Api.apiCall('post', this.api, params, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         this.resultList = res.data;
       }
     }

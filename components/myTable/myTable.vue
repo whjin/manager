@@ -16,7 +16,7 @@
           <div v-else class="table-main" v-for="(item, index) in contents" :key="index">
             <div class="table-content">
               <div v-for="i in headers" :key="i.key" class="table-item" style="flex: 1">
-                {{ i.key === 'index' ? index + 1 : item[i.key] }}
+                {{ i.key == 'index' ? index + 1 : item[i.key] }}
               </div>
             </div>
             <div class="table-line"></div>

@@ -1,14 +1,16 @@
 <template>
-  <div class="home-container">
-    <nav-bar :showNavBar="showNavBar" :homeState="homeState && showHomeState" :backState="backState && showBackState" @click-init="onClickInitSet" @click-home="onClickHome" @click-back="onClickBack" />
+  <div class="home-container" @click="initCountTimeout">
+    <nav-bar :showNavBar="showNavBar" :homeState="homeState && showHomeState" :backState="backState && showBackState"
+      @click-init="onClickInitSet" @click-home="onClickHome" @click-back="onClickBack" />
     <div class="home-wrapper">
       <terminal-main v-if="currentTab == 31" ref="main"></terminal-main>
-      <div v-else-if="currentTab == 32" class="police-container" @touchstart.stop="initCountTimer">
+      <div v-else-if="currentTab == 32" class="police-container">
         <div class="police-content">
           <scroll-view scroll-y="true" class="police-scroll">
             <uni-grid :column="6" :show-border="false" :square="false">
               <uni-grid-item class="police-item" v-for="(item, index) in policeList" :key="index">
-                <div class="police-list" :class="index % 2 ? 'bgStyle-two' : 'bgStyle-one'" @click="handlePoliceClick(index)">
+                <div class="police-list" :class="index % 2 ? 'bgStyle-two' : 'bgStyle-one'"
+                  @click="handlePoliceClick(index)">
                   <image :src="item.image"></image>
                   <text>{{ item.name }}</text>
                 </div>
@@ -18,7 +20,7 @@
         </div>
       </div>
       <terminal-intercom v-else-if="currentTab == 33" ref="intercom"></terminal-intercom>
-      <police-fingerprint v-else-if="currentTab == 34" ref="fingerprint"></police-fingerprint>
+      <terminal-fingerprint v-else-if="currentTab == 34" ref="fingerprint"></terminal-fingerprint>
       <terminal-face v-else-if="currentTab == 26" ref="face"></terminal-face>
       <terminal-outRoomRegister v-else-if="currentTab == 27" ref="outRoomRegister"></terminal-outRoomRegister>
       <terminal-check v-else-if="currentTab == 28" ref="check"></terminal-check>
@@ -27,9 +29,16 @@
       <terminal-shopping v-else-if="currentTab == 35" ref="shopping"></terminal-shopping>
       <terminal-prisonerInfo v-else-if="currentTab == 36" ref="prisonerInfo"></terminal-prisonerInfo>
       <terminal-message v-else-if="currentTab == 37" ref="message"></terminal-message>
-      <bottom-bar :showBottomBar="showBottomBar" :loginState="loginState" :name="person.name" :countdown="loginTimeout" @click-logout="handleLogout" @click-set="handleSetUp" />
+      <terminal-schedule v-else-if="currentTab == 49" ref="schedule"></terminal-schedule>
+      <terminal-medication v-else-if="currentTab == 50" ref="medication"></terminal-medication>
+      <bottom-bar :showBottomBar="showBottomBar" :loginState="loginState" :name="person.name" :countdown="loginTimeout"
+        @click-logout="handleLogout" @click-set="handleSetUp" />
     </div>
     <div class="neil-modal-container">
+      <!-- 人脸/指纹登录弹框 -->
+      <recognition-dialogs ref="recognitionDialogs" useFor="login" :isShow="showRecognitionDialogs" :role="loginRole"
+        @fingerRecognitionSuccess="fingerRecognitionSuccess" @faceRecognitionSuccess="faceRecognitionSuccess"
+        @close="closeRecognitionDialogs"></recognition-dialogs>
       <!-- APP配置-基础URL -->
       <neil-modal class="setting-modal-container" :show="showUrlConfig" @close="closeModal('UrlConfig')">
         <view class="modal-box">
@@ -129,7 +138,8 @@
         </div>
       </neil-modal>
       <!-- 密码验证 -->
-      <keyboard :show="showSystemPwd" :failSystemPwd="failSystemPwd" ref="keyboard" @getPassword="getPassword" @hideKey="hideKeyModel"></keyboard>
+      <keyboard :show="showSystemPwd" :failSystemPwd="failSystemPwd" ref="keyboard" @getPassword="getPassword"
+        @hideKey="hideKeyModel"></keyboard>
       <!-- 系统菜单 -->
       <neil-modal :show="showSystemMenu">
         <div class="system-modal-container">
@@ -145,33 +155,20 @@
           <scroll-view scroll-y="true" class="system-menu-scroll">
             <ul>
               <li @click="policeFingerprint">民警指纹录入</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="openModal('PoliceFinger')">同步民警指纹</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="showNavigationBar">显示状态栏</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="hideNavigationBar">隐藏状态栏</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="openModal('RestartDev')">设备重启</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="openModal('RestartApp')">应用重启</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="openModal('ConfigInfo')">同步配置信息</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="getUpdateAppInfo(0)">升级APP</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="echoCalibrate">回声校准</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="openCrashHandle">开启守护</li>
-              <div class="page-horizontal-divider"></div>
               <li @click="closeCrashHandle">关闭守护</li>
-              <div class="page-horizontal-divider"></div>
             </ul>
           </scroll-view>
         </div>
       </neil-modal>
-      <!-- 登录弹框 -->
-      <recognition-dialogs ref="recognitionDialogs" :isShow="showRecognitionDialogs" :role="loginRole" @fingerRecognitionSuccess="fingerRecognitionSuccess" @faceRecognitionSuccess="faceRecognitionSuccess" @close="handleRecognitionDialogsClose"></recognition-dialogs>
       <!-- 同步民警指纹弹框 -->
       <neil-modal :show="showPoliceFinger">
         <div class="common-modal-container">
@@ -286,13 +283,14 @@ import terminalConditionReport from "@/pages/police/conditionReport/conditionRep
 import terminalDiagnosis from "@/pages/police/diagnosis/diagnosis.vue";
 import terminalShopping from "@/pages/police/shopping/shopping.vue";
 import terminalPrisonerInfo from "@/pages/police/prisonerInfo/prisonerInfo.vue";
-import policeFingerprint from "@/pages/police/fingerprint/fingerprint.vue";
+import terminalFingerprint from "@/pages/police/fingerprint/fingerprint.vue";
 import terminalMessage from "@/pages/police/message/message.vue";
+import terminalSchedule from "@/pages/police/schedule/schedule.vue";
+import terminalMedication from "@/pages/police/medication/medication.vue";
 import { isNullStr, dateFormat } from "@/common/utils/util.js";
 import Api from "@/common/api.js";
 import Log from "@/common/utils/log.js";
 import { mapState, mapMutations } from "vuex";
-import policeList from "@/static/mock/policeList.json";
 
 export default {
   components: {
@@ -313,10 +311,12 @@ export default {
     terminalDiagnosis,
     terminalShopping,
     terminalPrisonerInfo,
-    policeFingerprint,
+    terminalFingerprint,
     terminalMessage,
+    terminalSchedule,
+    terminalMedication,
   },
-  data () {
+  data() {
     return {
       // 登录用户信息
       person: {
@@ -400,6 +400,8 @@ export default {
       loginRole: 1,
       // socket重连次数
       reconnectCount: 0,
+      // 校时时间
+      timing: null,
     };
   },
   computed: {
@@ -420,25 +422,29 @@ export default {
       loginState: (state) => state.app.loginState,
       // 视频播放信息
       videoInfo: (state) => state.app.videoInfo,
+      // 视频对讲状态
+      openIntercom: (state) => state.app.openIntercom,
+      // 视频对讲信息
+      intercomInfo: (state) => state.app.intercomInfo,
     }),
     // 标题栏状态
-    showNavBar () {
+    showNavBar() {
       return this.currentTab != 31;
     },
     // 状态栏状态
-    showBottomBar () {
+    showBottomBar() {
       return this.currentTab != 31;
     },
     // 返回首页状态
-    showHomeState () {
+    showHomeState() {
       return ![31, 33].includes(this.currentTab);
     },
     // 页面回退状态
-    showBackState () {
+    showBackState() {
       return ![31, 32, 33].includes(this.currentTab);
     },
     // 重连定时器间隔
-    websocketTime () {
+    websocketTime() {
       let count = this.reconnectCount;
       if (count >= 0 && count < 360) {
         return 10000;
@@ -453,11 +459,13 @@ export default {
       }
     },
     // 分机IP
-    terminalIP () {
-      return getApp().globalData.Base.getIpAddress().ip || this.$config.terminalIP;
-    }
+    terminalIP() {
+      return (
+        getApp().globalData.Base.getIpAddress().ip || this.$config.terminalIP
+      );
+    },
   },
-  onLoad () {
+  onLoad() {
     this.reconnectCount = 0;
     //初始化配置-基础Url
     if (isNullStr(uni.getStorageSync("baseUrl"))) {
@@ -471,25 +479,19 @@ export default {
       // 同步配置信息
       this.configInfoSync();
 
-      // #ifdef APP-PLUS
-      const _this = this;
-      // 门磁门灯事件监听
-      plus.globalEvent.removeEventListener("IO_Alarm");
-      plus.globalEvent.addEventListener("IO_Alarm", function (e) {
-        console.log("门磁门灯状态：" + JSON.stringify(e));
-        // 门磁门灯 1：开启 0：关闭
-        getApp().globalData.SystemModule.setGpio(139, e.value);
-        _this.setDynamicInfo(e.value);
-      });
-      // #endif
       // 来邦初始化对讲服务
-      getApp().globalData.FloatUniModule.initIPCManager(e => {
+      getApp().globalData.FloatUniModule.initIPCManager((e) => {
         if (e.code == 0) {
           // 获取设备信息
-          getApp().globalData.FloatUniModule.getCurrentDeviceInfo(info => {
+          getApp().globalData.FloatUniModule.getCurrentDeviceInfo((info) => {
             console.log(info);
+            // 设备校时
+            if (this.timing) {
+              getApp().globalData.FloatUniModule.setSystemTime(this.timing);
+            }
+            getApp().globalData.FloatUniModule.hideTalkView(true);
             // 来邦对讲事件监听
-            getApp().globalData.FloatUniModule.talkEventCallback(res => {
+            getApp().globalData.FloatUniModule.talkEventCallback((res) => {
               console.log("对讲服务事件：" + JSON.stringify(res));
               getApp().globalData.FloatUniModule.openLocalCamera(true);
               if (res.eventID == 1) {
@@ -504,10 +506,12 @@ export default {
               } else if (res.eventID == 5) {
                 // 通话或呼叫挂断
                 this.stopIntercom(res);
+                this.voiceBroadcast("对讲已挂断");
               } else if (res.eventID == 7 || res.eventID == 8) {
                 // 7对方忙，8呼出失败
                 this.stopIntercom(res);
-                let { code: managerCode, terminalCode } = uni.getStorageSync("managerInfo");
+                let { code: managerCode, terminalCode } =
+                  uni.getStorageSync("managerInfo");
                 this.sendWebsocket(
                   `{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"6"}`
                 );
@@ -515,27 +519,70 @@ export default {
                 // 10-按键对讲|11-按键报警
               }
             });
+            // 来邦监听指纹事件
+            getApp().globalData.FloatUniModule.setCompareFingerprintCallBack(
+              (res) => {
+                console.log("指纹状态：" + JSON.stringify(res));
+                if (!this.isRepeatState) {
+                  this.isRepeatState = true;
+                  setTimeout(() => {
+                    this.isRepeatState = false;
+                  }, 3000);
+                  if (this.currentTab == 34) {
+                    // 民警指纹录入
+                    this.$refs.fingerprint.handleFingerprint(res);
+                    return;
+                  }
+                  if (res.code == "0") {
+                    let params = {
+                      mKey: res.id,
+                    };
+                    if ([50].includes(this.currentTab)) {
+                      params.operate = 2;
+                      this.$refs.medication.fingerRecognitionSuccess(params);
+                    } else {
+                      this.fingerRecognitionSuccess(params);
+                    }
+                  } else {
+                    this.voiceBroadcast("识别失败，指纹不匹配");
+                  }
+                }
+              }
+            );
+            // 来邦监听刷卡事件
+            getApp().globalData.FloatUniModule.setCardDataCallBack((res) => {
+              console.log("刷卡状态：" + JSON.stringify(res));
+              if (res.code == "0") {
+                // 关闭刷卡
+                getApp().globalData.FloatUniModule.syncStopCard();
+                if (this.showRecognitionDialogs) {
+                  let cardNo = res.cardNum;
+                  this.getPoliceByCardNum(cardNo);
+                }
+              }
+            });
             // 来邦门磁事件监听
-            getApp().globalData.FloatUniModule.onDoorContactValue(res => {
+            getApp().globalData.FloatUniModule.onDoorContactValue((res) => {
               console.log("门磁事件：" + JSON.stringify(res));
               // 门磁门灯 1开启 0关闭
-              // _this.setDynamicInfo(res.isOpen);
+              // this.setDynamicInfo(res.isOpen);
             });
           });
         }
       });
       //websocket连接
       if (!getApp().globalData.webSocketConnected) {
-        if (!isNullStr(uni.getStorageSync("managerInfo").code)) {
+        const { managerCode } = uni.getStorageSync("managerInfo");
+        if (!isNullStr(managerCode)) {
           //初始化配置WS服务
-          this.connectWebSocketInit(uni.getStorageSync("managerInfo").code);
+          this.connectWebSocketInit(managerCode);
         } else {
           this.setAllBindInfo();
         }
       }
     }
   },
-  destroyed () {
+  destroyed() {
     this.clickNums = 0;
     uni.hideToast();
   },
@@ -559,9 +606,13 @@ export default {
       setIntercomInfo: "app/SET_INTERCOMINFO",
     }),
     // 获取APP配置菜单
-    async getAppMenuList () {
-      let areaCode = uni.getStorageSync("managerInfo").areaCode;
-      let res = await Api.apiCall("get", Api.index.getAppModuleConf + `?device=manager&unitCode=${areaCode}`, null);
+    async getAppMenuList() {
+      const { areaCode } = uni.getStorageSync("managerInfo");
+      let res = await Api.apiCall(
+        "get",
+        Api.index.getAppModuleConf + `?device=manager&unitCode=${areaCode}`,
+        null
+      );
       if (res.state.code == 200) {
         if (res.data.length) {
           this.policeList = res.data[0].children;
@@ -569,7 +620,7 @@ export default {
       }
     },
     // 仓外屏视频通话
-    intercomHandler (res) {
+    intercomHandler(res) {
       clearInterval(this.timer);
       this.showVideoConnect = false;
       this.setOpenIntercom(true);
@@ -577,44 +628,71 @@ export default {
       this.voiceBroadcast("请注意，已经开启视频对讲！");
       // 跳转进入视频对讲页面
       this.setCurrentTab(33);
+      if (this.intercomInfo.id == 1) {
+        const { terminalCode, managerCode } = uni.getStorageSync("managerInfo");
+        this.sendWebsocket(
+          `{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"23"}`
+        );
+      }
       let { masterNum, slaveNum, devRegType } = res;
-      console.log(masterNum, slaveNum, devRegType);
-      getApp().globalData.FloatUniModule.setTalkViewPosition(45, 220, 1060, 710);
-      getApp().globalData.FloatUniModule.nativeAnswer(0, masterNum, slaveNum, devRegType);
+      console.log(0, masterNum, slaveNum, devRegType);
+      getApp().globalData.FloatUniModule.hideTalkView(false);
+      getApp().globalData.FloatUniModule.setTalkViewPosition(
+        45,
+        220,
+        1060,
+        710
+      );
+      getApp().globalData.FloatUniModule.nativeAnswer(
+        0,
+        masterNum,
+        slaveNum,
+        devRegType
+      );
       getApp().globalData.FloatUniModule.hideLocalPreView(false);
-      getApp().globalData.FloatUniModule.setLocalVideoViewPosition(1150, 220, 727, 460);
+      getApp().globalData.FloatUniModule.setLocalVideoViewPosition(
+        1150,
+        220,
+        727,
+        460
+      );
     },
     // 关闭视频通话
-    stopIntercom (device) {
+    stopIntercom(device) {
       this.resetIntercom();
       let { masterNum, slaveNum } = device;
-      console.log(masterNum, slaveNum);
-      getApp().globalData.FloatUniModule.nativeHangup(0, masterNum, slaveNum, 0);
+      console.log(0, masterNum, slaveNum, 0);
+      getApp().globalData.FloatUniModule.nativeHangup(
+        0,
+        masterNum,
+        slaveNum,
+        0
+      );
       this.setCurrentTab(32);
     },
     // 重置对讲状态
-    resetIntercom () {
+    resetIntercom() {
       this.intercomState = false;
       this.showVideoConnect = false;
       this.setOpenIntercom(false);
     },
-    // 重置倒计时
-    initCountTimer () {
-      this.loginTimeout = uni.getStorageSync("loginTimeout") || 30;
-    },
-    // 重置其他倒计时长
-    initSpecialTimeout () {
-      this.loginTimeout = uni.getStorageSync("specialLoginTimeout") || 120;
+    // 重置倒计时长
+    initCountTimeout() {
+      if ([26, 28].includes(this.currentTab)) {
+        this.loginTimeout = uni.getStorageSync("specialLoginTimeout") || 120;
+      } else {
+        this.loginTimeout = uni.getStorageSync("loginTimeout") || 30;
+      }
     },
     // 倒计时
-    countTimer () {
-      this.initCountTimer();
+    countTimer() {
+      this.initCountTimeout();
+      clearInterval(this.timer);
       this.timer = setInterval(() => {
         this.loginTimeout--;
         if (this.loginTimeout <= 0) {
           clearInterval(this.timer);
           clearInterval(this.loginTimer);
-          this.initCountTimer();
           if (this.person.id !== "0999") {
             this.setLoginState(false);
           }
@@ -626,7 +704,7 @@ export default {
       }, 1000);
     },
     // 消息提示
-    handleShowToast (title, position = "bottom", duration = 1500) {
+    handleShowToast(title, position = "bottom", duration = 1500) {
       uni.showToast({
         title: title,
         position: position,
@@ -635,11 +713,11 @@ export default {
       });
     },
     // 切换民警子模块
-    handlePoliceClick (index) {
+    handlePoliceClick(index) {
       this.handleHomeModal(this.policeList[index]);
     },
     // 子模块路由跳转
-    handleHomeModal (item) {
+    handleHomeModal(item) {
       if (!this.intercomState) {
         this.intercomState = true;
         setTimeout(() => {
@@ -648,32 +726,26 @@ export default {
         if (!isNullStr(item.isModal) && item.isModal) {
           this.openModal(item.url);
         } else {
-          if (isNullStr(item.name)) {
-            this.handleShowToast("Developing");
+          if (item.index == 29) {
+            this.loginRole = 2;
           } else {
-            if (!isNullStr(item.index) && item.index > 2) {
-              if (item.index === 9) {
-                this.loginRole = 2;
-              } else {
-                this.loginRole = 1;
-              }
-              this.initCountTimer();
-              this.currentPage = item.index;
-              if (this.person.id === "0999" || item.index == 10) {
-                this.setCurrentTab(this.currentPage);
-              } else {
-                this.showRecognitionDialogs = true;
-                this.$nextTick(() => {
-                  this.$refs.recognitionDialogs.startRecognition();
-                });
-              }
-            }
+            this.loginRole = 1;
+          }
+          if (this.person.id == "0999") {
+            this.setCurrentTab(item.index);
+          } else {
+            this.currentPage = item.index;
+            this.openModal("RecognitionDialogs");
+            this.$nextTick(() => {
+              this.$refs.recognitionDialogs &&
+                this.$refs.recognitionDialogs.startRecognition();
+            });
           }
         }
       }
     },
     // 管理员密码验证
-    getPassword (e) {
+    getPassword(e) {
       let adminPassword = uni.getStorageSync("adminPassword");
       if (e == adminPassword) {
         this.showSystemPwd = false;
@@ -692,35 +764,31 @@ export default {
       }
     },
     // 关闭密码验证弹框
-    hideKeyModel () {
+    hideKeyModel() {
       this.initState = false;
       this.setupState = false;
       this.showSystemPwd = false;
     },
     // 民警指纹录入页面
-    policeFingerprint () {
-      this.setCurrentTab(34);
+    policeFingerprint() {
       this.showSystemMenu = false;
+      this.setCurrentTab(34);
     },
     // 重启设备
-    handleRestartDev () {
+    handleRestartDev() {
       uni.closeSocket();
       getApp().globalData.FloatUniModule.rebootSystem();
     },
     // 重启应用
-    handleRestartApp () {
-      // #ifdef APP-PLUS
-      plus.runtime.restart();
-      // #endif
+    handleRestartApp() {
+      getApp().globalData.Base.rebootApp("com.gksc.manager");
     },
     // 显示状态栏
-    showNavigationBar () {
-    },
+    showNavigationBar() { },
     //隐藏状态栏
-    hideNavigationBar () {
-    },
+    hideNavigationBar() { },
     // 同步配置信息
-    configInfoSync () {
+    configInfoSync() {
       this.sysCacheInfo = "";
       // 加载系统缓存
       this.setAllSettingCache();
@@ -729,7 +797,7 @@ export default {
       this.showConfigInfo = false;
     },
     // 升级APP
-    async getUpdateAppInfo (type) {
+    async getUpdateAppInfo(type) {
       let params = {
         data: {
           versionCode: plus.runtime.versionCode,
@@ -737,7 +805,7 @@ export default {
         },
       };
       let res = await Api.apiCall("post", Api.index.getUpdateInfo, params);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         switch (type) {
           case 0:
             this.appVersion = plus.runtime.version;
@@ -762,7 +830,7 @@ export default {
       }
     },
     // 下载更新APP
-    handleUpdateApp () {
+    handleUpdateApp() {
       plus.io.resolveLocalFileSystemURL(
         "/sdcard/Download/update.apk",
         (entry) => {
@@ -789,7 +857,7 @@ export default {
       );
     },
     // 下载安装APP
-    updateControl () {
+    updateControl() {
       plus.nativeUI.showWaiting("安装包下载中，请稍候...");
       plus.downloader
         .createDownload(
@@ -817,21 +885,19 @@ export default {
         .start();
     },
     // 回声校准
-    echoCalibrate () { },
+    echoCalibrate() { },
     // 开启守护
-    openCrashHandle () {
+    openCrashHandle() {
       getApp().globalData.FloatUniModule.openGuard(1);
       console.log("【开启守护成功，openCrashHandle()】");
-      Log.writeLog("【开启守护成功，openCrashHandle()】", false);
     },
     // 关闭守护
-    closeCrashHandle () {
+    closeCrashHandle() {
       getApp().globalData.FloatUniModule.openGuard(0);
       console.log("【关闭守护成功，openCrashHandle()】");
-      Log.writeLog("【关闭守护成功，closeCrashHandle()】", false);
     },
     // 点击打开设置
-    onClickInitSet () {
+    onClickInitSet() {
       if (this.currentTab == 32) {
         if (this.clickNums == 3) {
           this.clickNums = 0;
@@ -843,9 +909,8 @@ export default {
       }
     },
     // 返回首页
-    onClickHome () {
+    onClickHome() {
       clearInterval(this.timer);
-      this.initCountTimer();
       if (this.person.id != "0999") {
         this.person.id = "";
         this.person.name = "";
@@ -856,7 +921,7 @@ export default {
       this.setCurrentTab(31);
     },
     // 页面回退
-    onClickBack () {
+    onClickBack() {
       if (this.person.id != "0999") {
         this.person.id = "";
         this.person.name = "";
@@ -864,11 +929,11 @@ export default {
         this.setPersonInfo({});
         this.setLoginState(false);
       }
-      this.initCountTimer();
+      this.initCountTimeout();
       this.setCurrentTab(32);
     },
     // 下一步设置baseUrl
-    setBaseUrl () {
+    setBaseUrl() {
       if (!isNullStr(this.baseUrl)) {
         uni.setStorageSync("baseUrl", this.baseUrl);
         this.closeModal("UrlConfig");
@@ -885,12 +950,12 @@ export default {
       }
     },
     // 加载系统缓存
-    async setAllSettingCache () {
+    async setAllSettingCache() {
       if (!isNullStr(this.sysCacheInfo)) {
         return;
       }
       let res = await Api.apiCall("get", Api.index.getAllSetting, null, true);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         let data = res.data;
         data.map((item) => {
           if (item.skey) {
@@ -907,7 +972,7 @@ export default {
       }
     },
     // 认证终端信息
-    async setAllBindInfo () {
+    async setAllBindInfo() {
       if (this.isWebSocketDisable) {
         this.handleShowToast("请勿重复认证！");
         return;
@@ -919,17 +984,18 @@ export default {
       uni.setStorageSync("authTerminalIP", this.terminalIP);
       let res = await Api.apiCall(
         "get",
-        Api.index.getTerminalInfo,
+        Api.index.getTerminalByIp,
         params,
         true
       );
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         if (!isNullStr(res.data)) {
           // 设置本地缓存公共方法
           this.setManagerStorage(res.data);
-          if (!isNullStr(uni.getStorageSync("managerInfo").code)) {
+          const { managerCode } = uni.getStorageSync("managerInfo");
+          if (!isNullStr(managerCode)) {
             //初始化配置WS服务
-            this.connectWebSocketInit(uni.getStorageSync("managerInfo").code);
+            this.connectWebSocketInit(managerCode);
           } else {
             uni.showToast({
               title: "缓存设置失败！！",
@@ -953,18 +1019,18 @@ export default {
       }
     },
     // 同步认证终端信息
-    async AllBindInfoSync () {
+    async AllBindInfoSync() {
       let params = {
         ip: this.terminalIP,
         terminalType: 1,
       };
       let res = await Api.apiCall(
         "get",
-        Api.index.getTerminalInfo,
+        Api.index.getTerminalByIp,
         params,
         true
       );
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         if (!isNullStr(res.data)) {
           // 设置本地缓存公共方法
           this.setManagerStorage(res.data);
@@ -985,18 +1051,15 @@ export default {
       }
     },
     // 设置本地缓存公共方法
-    setManagerStorage (data) {
+    setManagerStorage(data) {
       let managerInfo = {
         ...data,
-        code: data.managerCode,
-        name: data.managerName,
-        ip: data.terminalIp,
-        id: data.terminalId,
+        value: data.roomName,
       };
       uni.setStorageSync("managerInfo", managerInfo);
     },
     // 关闭终端配置弹框
-    closeCacheConfig () {
+    closeCacheConfig() {
       if (isNullStr(this.sysCacheInfo)) {
         uni.showToast({
           title: "系统缓存为空！",
@@ -1018,47 +1081,24 @@ export default {
         });
       } else {
         this.closeModal("CacheConfig");
-        // #ifdef APP-PLUS
-        plus.runtime.restart();
-        // #endif
+        getApp().globalData.Base.rebootApp("com.gksc.manager");
       }
     },
     // 发送WebSocket数据
-    sendWebsocket (data) {
+    sendWebsocket(data) {
       this.socketTask.send({
         data: data,
-        success (res) {
+        success(res) {
           console.log("消息发送成功:" + JSON.stringify(data));
         },
-        fail (err) {
+        fail(err) {
           console.log("消息发送失败:" + JSON.stringify(err));
           this.webSocketReConnct();
         },
       });
     },
-    // 开始视频推流
-    startLivePusher (pushUrl) {
-      let subNVue = uni.getSubNVueById("livePusher");
-      subNVue.show("fade-in", 200, () => {
-        uni.$emit("live-push", {
-          status: "start",
-          url: pushUrl,
-        });
-      });
-    },
-    // 停止监视监听|广播推流
-    stopLivePusher () {
-      uni.$emit("stop-play");
-      this.setPlayerUrl("");
-      let subNVue = uni.getSubNVueById("livePusher");
-      subNVue.show("fade-in", 200, () => {
-        uni.$emit("live-push", {
-          status: "stop",
-        });
-      });
-    },
     // WebSocket初始连接
-    connectWebSocketInit (code) {
+    connectWebSocketInit(code) {
       // 设备离线状态
       if (!getApp().globalData.webSocketConnected) {
         this.showVideoConnect = false;
@@ -1069,8 +1109,8 @@ export default {
       }
       this.socketTask = uni.connectSocket({
         url: uni.getStorageSync("webSocketUrl") + code,
-        success (res) { },
-        fail (err) { },
+        success(res) { },
+        fail(err) { },
       });
       this.socketTask.onOpen((res) => {
         this.handleShowToast("绑定终端信息成功！");
@@ -1080,7 +1120,7 @@ export default {
         // 重新获取电子水牌页数据
         setTimeout(() => {
           if (this.currentTab == 31) {
-            this.$refs.main.refreshData(true);
+            this.$refs.main.refreshMainData(true);
           }
         }, 30000);
       });
@@ -1101,9 +1141,9 @@ export default {
         let info = JSON.parse(res.data);
         console.log(JSON.stringify(info));
         if (info.type == this.$config.controlType.HEARTBEAT) {
-          let { code, ip } = uni.getStorageSync("managerInfo");
+          const { managerCode } = uni.getStorageSync("managerInfo");
           this.sendWebsocket(
-            `{maindevno:'', devno:'${code}', type:'000', msg:'1',extend:{'ip':'${ip}'}}`
+            `{maindevno:'', devno:'${managerCode}', type:'000', msg:'1',extend:{'ip':'${this.terminalIP}'}}`
           );
           if (!isNullStr(this.heartbeatTimer)) {
             clearTimeout(this.heartbeatTimer);
@@ -1130,14 +1170,18 @@ export default {
           } else if (info.msg == "8") {
             if (info.extend == "") {
               // 回传本机音量
-              getApp().globalData.FloatUniModule.getStreamVolumeTypeVoiceCall(e => {
-                this.sendWebsocket(
-                  `{maindevno:'${info.maindevno}', devno:'${info.devno}', type:'100', msg:'9',extend:'${e.value}'}`
-                );
-              });
+              getApp().globalData.FloatUniModule.getStreamVolumeTypeVoiceCall(
+                (e) => {
+                  this.sendWebsocket(
+                    `{maindevno:'${info.maindevno}', devno:'${info.devno}', type:'100', msg:'9',extend:'${e.value}'}`
+                  );
+                }
+              );
             } else {
               // 设置本机音量
-              getApp().globalData.FloatUniModule.setStreamVolumeTypeVoiceCall(Number(info.extend));
+              getApp().globalData.FloatUniModule.setStreamVolumeTypeVoiceCall(
+                Number(info.extend)
+              );
             }
           } else if (info.msg == "9") {
             // 获取分机音量
@@ -1149,24 +1193,18 @@ export default {
           }
         } else if (info.type == this.$config.controlType.ALARM) {
           if (info.msg == "7") {
-            getApp().globalData.HarUtils.switchCtrl(0, 0);
           } else if (info.msg == "8") {
-            getApp().globalData.HarUtils.switchCtrl(0, 1);
           }
         } else if (info.type == this.$config.controlType.DEVICE) {
-          let content = {
-            content: info.extend,
-          };
           if (info.msg == "0") {
-            console.log("开始语音播报");
-            getApp().globalData.Base.speech(content);
-            Log.writeLog("this.$config.controlType.DEVICE,开始语音播报", false);
+            let options = {
+              content: info.extend,
+            };
+            getApp().globalData.Base.speech(options);
           } else if (info.msg == "1") {
-            console.log("停止语音播报");
             getApp().globalData.Base.speechStop();
-            Log.writeLog("this.$config.controlType.DEVICE,停止语音播报", false);
           } else if (info.msg == "2") {
-            console.log("设备校时");
+            this.timing = info.extend;
             getApp().globalData.FloatUniModule.setSystemTime(info.extend);
           } else if (info.msg == "3") {
             // 设备重启
@@ -1175,8 +1213,8 @@ export default {
           } else if (info.msg == "4") {
             if (!!info.extend) {
               let ids = info.extend;
-              // 删除在押人员指纹ID
-              this.delPrisonerFingerId(ids);
+              // 删除民警指纹ID
+              this.delPoliceFingerId(ids);
             }
           } else if (info.msg == "5") {
             // 同步民警指纹
@@ -1189,12 +1227,19 @@ export default {
             this.getUpdateAppInfo(1);
           } else if (info.msg == "8") {
             // 应用重启
-            // #ifdef APP-PLUS
-            plus.runtime.restart();
-            // #endif
+            getApp().globalData.FloatUniModule.stopTakeFrame();
+            getApp().globalData.FloatUniModule.hideLocalPreView(true);
+            if (this.currentTab == 33 && this.openIntercom) {
+              this.$refs.intercom.hangupIntercom();
+              setTimeout(() => {
+                getApp().globalData.Base.rebootApp("com.gksc.manager");
+              }, 3000);
+            } else {
+              getApp().globalData.Base.rebootApp("com.gksc.manager");
+            }
           } else if (info.msg == "9") {
             if (this.currentTab == 31) {
-              this.$refs.main.refreshData(true);
+              this.$refs.main.refreshMainData(true);
             }
           } else if (info.msg == "10") {
             // 回声消除
@@ -1207,7 +1252,7 @@ export default {
             getApp().globalData.FloatUniModule.openGuard(0);
             console.log("关闭守护成功");
           } else if (info.msg == "13") {
-            Log.uploadLogFile(content.content);
+            Log.uploadLogFile(info.extend);
           } else if (info.msg == "15") {
             // 打开设备ADB
             getApp().globalData.UpdateApp.shell(
@@ -1231,14 +1276,21 @@ export default {
               }
             );
           } else if (info.msg == "18") {
-            this.setPersonInfo(this.$config.admin);
-            this.person.id = this.$config.admin.rybh;
-            this.person.name = this.$config.admin.name;
-            this.person.code = this.$config.admin.code;
-            this.setLoginState(true);
-          } else if (info.msg == "19") {
+            this.initCountTimeout();
             clearInterval(this.timer);
-            this.initCountTimer();
+            let admin = {
+              name: '管理员',
+              dabh: '099',
+              rybh: '0999',
+              code: '09999'
+            };
+            this.person.id = admin.rybh;
+            this.person.name = admin.name;
+            this.person.code = admin.code;
+            this.setPersonInfo(admin);
+            this.setLoginState(true);
+            this.setCurrentTab(32);
+          } else if (info.msg == "19") {
             this.person.id = "";
             this.person.name = "";
             this.person.code = "";
@@ -1249,10 +1301,9 @@ export default {
         }
       });
     },
-    webSocketReConnct () {
+    webSocketReConnct() {
       clearInterval(this.socketTimer);
       clearTimeout(this.heartbeatTimer);
-      // 重置会话，如不重置，重复创建会话对象，不知资源是否会释放
       if (this.socketTask != null) {
         this.socketTask.close({
           success: (res) => {
@@ -1268,14 +1319,15 @@ export default {
       this.showVideoConnect = false;
       this.reconnectCount++;
       this.socketTimer = setTimeout(() => {
+        const { managerCode } = uni.getStorageSync("managerInfo");
         console.log(
           "create，清除this.socketTimer定时器，触发重连机制",
-          uni.getStorageSync("managerInfo").code
+          managerCode
         );
-        this.connectWebSocketInit(uni.getStorageSync("managerInfo").code);
+        this.connectWebSocketInit(managerCode);
       }, this.websocketTime);
     },
-    webSocketOff () {
+    webSocketOff() {
       // 离线标记
       this.showDevOffline = true;
       // websocket 断开标记
@@ -1285,7 +1337,7 @@ export default {
       // 打开重复认证终端
       this.isWebSocketDisable = false;
     },
-    webSocketOn () {
+    webSocketOn() {
       getApp().globalData.webSocketConnected = true;
       this.sysWebSocketInfo = "已连接";
       this.sysCacheInfo = "配置系统缓存成功！";
@@ -1297,49 +1349,41 @@ export default {
       // 获取APP配置菜单
       this.getAppMenuList();
     },
-    delPrisonerFingerId (ids) {
+    delPoliceFingerId(ids) {
       // 打开指纹设备
-      getApp().globalData.FloatUniModule.syncStartFinger(e => {
+      getApp().globalData.FloatUniModule.syncStartFinger((e) => {
         if (e.code == 0) {
           let res = 0;
           for (let i = 0; i < ids.length; i++) {
             getApp().globalData.FloatUniModule.clearFingerprintById(ids[i]);
-            Log.writeLog(
-              "this.$config.controlType.DEVICE,删除民警指纹ID:" + ids[i],
-              false
-            );
             res++;
           }
           if (res > 0) {
             console.log("删除民警指纹成功！");
-            Log.writeLog("删除民警指纹成功！", false);
           } else {
             console.log("删除民警指纹失败！");
             this.handleShowToast("删除民警指纹失败！");
           }
-          getApp().globalData.FloatUniModule.syncStopFinger(e => {
+          getApp().globalData.FloatUniModule.syncStopFinger((e) => {
             if (e.code == 0) {
-              console.log("指纹设备已关闭");
               getApp().globalData.FloatUniModule.fingerModuleStop();
             }
           });
         } else {
           this.voiceBroadcast("指纹设备未打开");
-          console.log("指纹设备未打开");
         }
       });
     },
     // 同步民警指纹信息
-    syncPoliceFinger () {
+    syncPoliceFinger() {
       // 打开指纹设备
-      getApp().globalData.FloatUniModule.syncStartFinger(e => {
+      getApp().globalData.FloatUniModule.syncStartFinger((e) => {
         if (e.code == 0) {
           console.log("指纹设备已打开");
           getApp().globalData.FloatUniModule.clearAllFingerprint();
           // 同步民警信息
           this.syncPersonFingerInfo();
           console.log("删除全部指纹成功");
-          Log.writeLog("删除全部指纹成功", false);
         } else {
           this.voiceBroadcast("指纹设备未打开");
           console.log("指纹设备未打开");
@@ -1347,12 +1391,12 @@ export default {
       });
     },
     // 民警指纹信息
-    async syncPersonFingerInfo () {
-      let roomId = uni.getStorageSync("managerInfo").roomId;
+    async syncPersonFingerInfo() {
+      const { roomId } = uni.getStorageSync("managerInfo");
       let res = await Api.apiCall("get", Api.index.getPoliceFingerInfo, {
         roomId,
       });
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         if (res.data.length) {
           let successNum = 0,
             failNum = 0,
@@ -1378,14 +1422,10 @@ export default {
           });
           this.closeModal("PoliceFinger");
           console.log(`同步民警指纹成功${successNum}个，失败${failNum}个`);
-          Log.writeLog(
-            `同步民警指纹成功${successNum}个，失败${failNum}个`,
-            false
-          );
           this.handleShowToast(
             `同步民警指纹成功${successNum}个，失败${failNum}个`
           );
-          let roomNo = uni.getStorageSync("managerInfo").roomNo;
+          const { roomNo } = uni.getStorageSync("managerInfo");
           let content = `设备指纹特征同步结果：监室号：${roomNo}，成功：${successList}，失败：${failList}`;
           this.saveFingerStateInfo(content, "07");
         } else {
@@ -1393,72 +1433,27 @@ export default {
           this.handleShowToast("同步民警指纹为空");
           console.log("民警指纹为空");
         }
-        getApp().globalData.FloatUniModule.syncStopFinger(e => {
+        getApp().globalData.FloatUniModule.syncStopFinger((e) => {
           if (e.code == 0) {
-            console.log("指纹设备已关闭");
+            console.log("关闭指纹");
             getApp().globalData.FloatUniModule.fingerModuleStop();
           }
         });
       }
     },
     // 保存指纹同步状态（成功|失败）信息
-    async saveFingerStateInfo (content, type) {
+    async saveFingerStateInfo(content, type) {
       let res = await Api.apiCall(
         "post",
         Api.index.saveFingerState + `?content=${content}&logType=${type}`,
         null
       );
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.handleShowToast("保存同步指纹信息成功");
       }
     },
-    // 获取指纹认证登录人员信息
-    async getLoginPersonInfo (mKey) {
-      let params = {
-        roomId: uni.getStorageSync("managerInfo").roomId,
-        mKey: mKey,
-      };
-      let url = Api.index.getOdsPoliceInfo;
-      let res = await Api.apiCall("get", url, params, true);
-      if (!this.showRecognitionDialogs) return;
-      if (res.state.code == "200") {
-        this.closeModal("RecognitionDialogs");
-        this.initCountTimer();
-        this.person.id = (res.data && res.data.rybh) || "";
-        this.person.name = (res.data && res.data.name) || "";
-        this.person.code = res.data.code;
-        this.setPersonInfo(res.data);
-        this.setLoginState(true);
-        this.setCurrentTab(this.currentPage);
-      }
-    },
-    // 设置人脸认证登录人员信息
-    async faceVerificationLogin (res) {
-      this.closeModal("RecognitionDialogs");
-      this.initCountTimer();
-      this.setPersonInfo(res);
-      this.person.id = res.rybh;
-      this.person.name = res.name;
-      this.person.code = res.code;
-      this.person.userId = res.userId;
-      this.setLoginState(true);
-      this.setCurrentTab(this.currentPage);
-    },
-    // 语音播放
-    voiceBroadcast (voiceText) {
-      let options = {
-        content: voiceText,
-      };
-      let res = getApp().globalData.Base.speech(options);
-      Log.writeLog("语音播放", false);
-      if (res.code == 0) {
-        // console.log("播报成功");
-      } else {
-        console.log("播报失败");
-      }
-    },
     // 值班室视频通话
-    handleManagerCall () {
+    handleManagerCall() {
       if (!this.isRepeatState) {
         this.isRepeatState = true;
         setTimeout(() => {
@@ -1472,18 +1467,24 @@ export default {
         }
         this.showManagerCall = false;
         this.showVideoConnect = true;
-        let controlName = uni.getStorageSync("managerInfo").controlName;
+        const { controlName } = uni.getStorageSync("managerInfo");
         this.setIntercomName(controlName);
         this.setIntercomInfo({ id: 0, content: "值班室视频" });
-        let manageInfo = uni.getStorageSync("managerInfo");
+        const {
+          controlCode,
+          managerCode,
+          roomName,
+          masterSipAccount,
+          sipAccount,
+        } = uni.getStorageSync("managerInfo");
         this.sendWebsocket(
-          `{maindevno:'${manageInfo.controlCode}', devno:'${manageInfo.code}', type:'100', msg:'19', extend:{'roomName':'${manageInfo.roomName}仓外屏','sipAccount':'${manageInfo.sipAccount}'}}`
+          `{maindevno:'${controlCode}', devno:'${managerCode}', type:'100', msg:'19', extend:{'roomName':'${roomName}仓外屏','masterSipAccount':'${masterSipAccount}','sipAccount':'${sipAccount}'}}`
         );
         this.voiceBroadcast("正在发起视频通话");
       }
     },
     // 监仓视频通话
-    handleTerminalCall () {
+    handleTerminalCall() {
       if (!this.isRepeatState) {
         this.isRepeatState = true;
         setTimeout(() => {
@@ -1499,35 +1500,37 @@ export default {
           let videoContext = uni.createVideoContext(this.videoInfo.id);
           videoContext.exitFullScreen();
         }
-        this.showTerminalCall = false;
-        let managerCode = uni.getStorageSync("managerInfo").code;
-        let terminalCode = uni.getStorageSync("managerInfo").terminalCode;
+        const { terminalCode, managerCode } = uni.getStorageSync("managerInfo");
         this.terminalDeviceStatus(terminalCode, managerCode);
+        this.showTerminalCall = false;
       }
     },
-    // // 获取分机离线|对讲中状态
-    async terminalDeviceStatus (terminalCode, managerCode) {
+    // 获取分机离线|对讲中状态
+    async terminalDeviceStatus(code, controlCode) {
       let res = await Api.apiCall(
         "get",
         Api.index.terminalDeviceStatus +
-        `?code=${terminalCode}&controlCode=${managerCode}`,
+        `?code=${code}&controlCode=${controlCode}`,
         null
       );
-      if (res.state.code == "200") {
-        let terminalName = uni.getStorageSync("managerInfo").roomName;
+      if (res.state.code == 200) {
+        const { terminalName } = uni.getStorageSync("managerInfo");
         switch (res.data.status) {
           case 0:
             this.voiceBroadcast(`${terminalName}已离线！`);
             break;
           case 1:
-            this.sendWebsocket(
-              `{maindevno:"${managerCode}",devno:"${terminalCode}",type:"100",msg:"23"}`
-            );
             this.setIntercomName(terminalName);
             this.setIntercomInfo({ id: 1, content: "仓内屏视频" });
-            let { controlSipAccount: masterNum, TerSipAccount: slaveNum } = uni.getStorageSync("managerInfo");
-            console.log(masterNum, slaveNum);
-            getApp().globalData.FloatUniModule.deviceClick(0, masterNum, slaveNum, 0);
+            let { masterSipAccount: masterNum, TerSipAccount: slaveNum } =
+              uni.getStorageSync("managerInfo");
+            console.log(0, masterNum, slaveNum, 0);
+            getApp().globalData.FloatUniModule.deviceClick(
+              0,
+              masterNum,
+              slaveNum,
+              0
+            );
             break;
           case 2:
             this.voiceBroadcast(`${terminalName}对讲中！`);
@@ -1536,47 +1539,47 @@ export default {
       }
     },
     // 底栏注销
-    handleLogout () {
+    handleLogout() {
       this.onClickHome();
     },
     // 底栏设置
-    handleSetUp () {
+    handleSetUp() {
       if (this.currentTab == 32) {
         this.setupState = true;
         this.showSystemPwd = !this.showSystemPwd;
       }
     },
     // 清理缓存
-    clearALLCache () {
-      const _this = this;
+    clearALLCache() {
       uni.showModal({
         title: "提示",
         content: "是否确定清除App所有数据存储缓存？",
-        success: function (res) {
+        success: res => {
           if (res.confirm) {
             uni.clearStorageSync();
-            _this.sysCacheInfo = "";
-            _this.webSocketOff();
-            _this.socketTask.close({
-              success: (res) => {
-                console.log(JSON.stringify(res), "关闭WebSocket成功！");
-              },
-              fail: (err) => {
-                console.log(JSON.stringify(err), "关闭WebSocket失败！");
-              },
-            });
+            this.sysCacheInfo = "";
+            this.webSocketOff();
+            if (this.socketTask) {
+              this.socketTask.close({
+                success: (res) => {
+                  console.log(JSON.stringify(res), "关闭WebSocket成功！");
+                },
+                fail: (err) => {
+                  console.log(JSON.stringify(err), "关闭WebSocket失败！");
+                },
+              });
+            }
           } else if (res.cancel) {
           }
         },
       });
     },
     // 新增(门磁门灯)动态信息
-    async setDynamicInfo (status) {
+    async setDynamicInfo(status) {
       let content;
       let operationTime = dateFormat("YYYY-MM-DD", new Date());
-      let controlId = uni.getStorageSync("managerInfo").controlId;
-      let areaName = uni.getStorageSync("managerInfo").areaName;
-      let roomName = uni.getStorageSync("managerInfo").roomName;
+      const { controlId, areaName, roomName } =
+        uni.getStorageSync("managerInfo");
       if (status == 1) {
         content = `${areaName}${roomName}门已打开`;
       } else {
@@ -1589,14 +1592,14 @@ export default {
         content,
       };
       let res = await Api.apiCall("post", Api.index.setDynamicInfo, params);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.handleShowToast("门磁门灯动态保存成功");
         // 推送主机(门磁门灯)动态消息
         this.sendMsgToControl();
       }
     },
     // 推送主机(门磁门灯)动态消息
-    async sendMsgToControl () {
+    async sendMsgToControl() {
       let params = {
         type: "700",
         msg: "9",
@@ -1604,19 +1607,116 @@ export default {
         devno: "",
         extend: "",
       };
-      let controlCode = uni.getStorageSync("managerInfo").controlCode;
+      const { controlCode } = uni.getStorageSync("managerInfo");
       await Api.apiCall(
         "post",
         Api.index.sendMsgToControl + `?devNo=${controlCode}`,
         params
       );
     },
+    // 人脸认证成功回调
+    faceRecognitionSuccess(res) {
+      this.policePermissionHandler(res, 1);
+    },
+    // 指纹认证成功回调
+    fingerRecognitionSuccess(res) {
+      this.getFingerPersonInfo(res);
+    },
+    // 获取指纹认证登录人员信息
+    async getFingerPersonInfo(data) {
+      const { roomId } = uni.getStorageSync("managerInfo");
+      let params = {
+        mKey: data.mKey,
+      };
+      let url = "";
+      if (["outroom"].includes(data.useFor)) {
+        params.roomNo = uni.getStorageSync("managerInfo").roomNo;
+        url = Api.index.getOdsPrisonerInfo;
+      } else {
+        params.roomId = uni.getStorageSync("managerInfo").roomId;
+        url = Api.index.getOdsPoliceInfo;
+      }
+      let res = await Api.apiCall("get", url, params, true);
+      if (res.state.code == 200) {
+        if (Reflect.has(res, "data") && Object.keys(res.data).length) {
+          this.policePermissionHandler(Object.assign(res.data, { mKey: data.mKey }), 2);
+          this.voiceBroadcast("指纹识别成功");
+        } else {
+          this.voiceBroadcast("指纹识别失败");
+        }
+      }
+    },
+    // 刷卡获取民警信息
+    async getPoliceByCardNum(cardNo) {
+      let res = await Api.apiCall(
+        "get",
+        Api.police.getUserByCardNum + cardNo,
+        null
+      );
+      if (res.state.code == 200) {
+        this.handleShowToast("刷卡成功");
+        if (this.currentTab == 32) {
+          const { accountName: code } = res.data;
+          let data = Object.assign(res.data, { code, operate: 3 });
+          this.$refs.medication.cardRecognitionSuccess(data);
+        } else {
+          this.policePermissionHandler(res.data, 3);
+        }
+      }
+    },
+    // 认证登录权限处理
+    policePermissionHandler(data, type) {
+      if (Object.keys(data).length) {
+        this.closeModal("RecognitionDialogs");
+        this.initCountTimeout();
+        // let module = this.policeList.find(item => item.index == this.currentPage);
+        // if (module.property.includes(data.idProperty)) {
+        //   this.setPoliceInfo(data, type);
+        // } else {
+        //   this.handleShowToast("没有操作权限");
+        // }
+        if (data.idProperty == 1) {
+          this.setPoliceInfo(data, type);
+        } else {
+          this.handleShowToast("没有操作权限");
+        }
+      }
+    },
+    // 设置民警/辅警登录信息
+    setPoliceInfo(data, type) {
+      if (type == 1 || type == 2) {
+        // 人脸/指纹登录成功
+        this.person = data;
+      }
+      if (type == 3) {
+        // 刷卡登录成功
+        const { accountName: code } = data;
+        this.person = Object.assign(data, { code });
+      }
+      this.setPersonInfo(this.person);
+      this.setLoginState(true);
+      this.setCurrentTab(this.currentPage);
+    },
+    // 登录弹框关闭回调
+    closeRecognitionDialogs() {
+      this.initCountTimeout();
+      this.closeModal("RecognitionDialogs");
+      this.currentPage = 32;
+      this.setCurrentTab(32);
+    },
+    // 语音播放
+    voiceBroadcast(voiceText) {
+      let options = {
+        content: voiceText,
+      };
+      getApp().globalData.Base.speech(options);
+    },
     // 打开弹框
-    openModal (type) {
+    openModal(type) {
       this[`show${type}`] = true;
     },
     // 关闭弹框
-    closeModal (type) {
+    closeModal(type) {
       this[`show${type}`] = false;
       this.intercomState = false;
       // 取消更新APP
@@ -1625,41 +1725,16 @@ export default {
       }
       // 取消值班室视频通话
       if (type == "VideoConnect") {
-        let managerCode = uni.getStorageSync("managerInfo").code;
-        let controlCode = uni.getStorageSync("managerInfo").controlCode;
+        const { controlCode, managerCode } = uni.getStorageSync("managerInfo");
         this.sendWebsocket(
           `{maindevno:"${controlCode}",devno:"${managerCode}",type:"100",msg:"25"}`
         );
       }
-    },
-    // 切换登录模式回调
-    switchRecognitionMode (mode) {
-      this.initCountTimer();
-    },
-    // 指纹认证成功回调
-    fingerRecognitionSuccess (res) {
-      if (!this.showRecognitionDialogs) return;
-      this.getLoginPersonInfo(res.mKey);
-    },
-    // 人脸认证成功回调
-    faceRecognitionSuccess (res) {
-      if (!this.showRecognitionDialogs) return;
-      this.faceVerificationLogin(res);
-    },
-    // 认证失败回调
-    recognitionFail () {
-      this.handleRecognitionDialogsClose();
-    },
-    // 登录弹框关闭回调
-    handleRecognitionDialogsClose () {
-      this.initCountTimer();
-      this.closeModal("RecognitionDialogs");
-      this.setCurrentTab(32);
     },
   },
 };
 </script>
 
 <style lang="less">
-@import '../../../common/less/index.less';
+@import "../../../common/less/index.less";
 </style>

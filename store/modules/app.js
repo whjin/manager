@@ -28,21 +28,9 @@ const state = {
     id: "",
     isFullScreen: false,
   },
-  // 对讲远端画面
-  aioRemoteTarget: "",
-  // 对讲本地画面
-  aioPreviewTarget: "",
 };
 
 const mutations = {
-  // 对讲远端目标地址
-  SET_AIOREMOTETARGET(state, info) {
-    state.aioRemoteTarget = info;
-  },
-  // 对讲本地目标地址
-  SET_AIOPREVIEWTARGET(state, info) {
-    state.aioPreviewTarget = info;
-  },
   // 当前页面
   SET_CURRENTTAB(state, num) {
     state.currentTab = num;

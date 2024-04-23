@@ -129,7 +129,7 @@ export default {
         remarks: '', // 简要情况
         rybhs: '', // 违规人员
         accountName: '', // 民警
-        roomNo: uni.getStorageSync('managerInfo').roomNo, // 监室号
+        roomNo: uni.getStorageSync("managerInfo").roomNo, // 监室号
         num: 0, // 违规人数
         violateType: '', // 违规类型
       },
@@ -141,7 +141,7 @@ export default {
       personInfo: (state) => state.app.personInfo
     }),
     roomName () {
-      return uni.getStorageSync('managerInfo').roomName;
+      return uni.getStorageSync("managerInfo").roomName;
     },
     selectedPrisoner () {
       if (!this.selectedPrisonerArr.length) return '无';
@@ -198,7 +198,7 @@ export default {
         accountName: this.personInfo.name
       });
       let res = await Api.apiCall('post', Api.police.conditionReport.saveViolation, params, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         uni.showToast({
           title: res.data || '违规上报成功！',
           position: 'center',

@@ -28,11 +28,11 @@ export default {
     },
     currentTab: {
       type: Number,
-      default: 1,
+      default: 31,
     },
     title: {
       type: String,
-      default: "监管智能交互终端系统",
+      default: "管教智能终端",
     },
     homeState: {
       type: Boolean,

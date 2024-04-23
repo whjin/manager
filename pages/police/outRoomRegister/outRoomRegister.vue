@@ -1,52 +1,61 @@
 <template>
-  <view class="out-room-register main-area" @touchstart.stop="handlePageClick">
+  <view class="out-room-register main-area">
     <view class="uni-flex page-title">
       <text>{{ title }}</text>
     </view>
     <view class="uni-flex uni-flex-item" style="height: 85%">
       <!-- 页面Tab -->
       <view class="uni-flex uni-column page-menu-area">
-        <view v-for="tab in tabConfig" :key="tab.key" class="uni-flex uni-column page-menu" :class="{ 'page-menu-activate': curPage === tab.page }" @click="switchPage(tab.page)">
-          <image :src="`/static/images/room/${tab.key}.png`" style="width: 35.41upx; height: 42.36upx; margin-top: 9.72upx"></image>
+        <view v-for="tab in tabConfig" :key="tab.key" class="uni-flex uni-column page-menu"
+          :class="{ 'page-menu-activate': curPage == tab.page }" @click="switchPage(tab.page)">
+          <image :src="`/static/images/room/${tab.key}.png`"
+            style="width: 35.41upx; height: 42.36upx; margin-top: 9.72upx"></image>
           <text style="line-height: 20.83upx; margin-top: 13.19upx">{{ tab.title }}</text>
         </view>
       </view>
       <!-- 进出监室记录 -->
-      <view v-if="curPage === 3" class="out-room-record uni-flex-item">
+      <view v-if="curPage == 3" class="out-room-record uni-flex-item">
         <view class="search-param-toolbar">
           <view class="param-list">
             <view v-for="params in searchParamConfig" :key="params.param" class="param-item">
               <text class="param-title">{{ params.title }}：</text>
               <!-- 在押人员 -->
-              <input v-if="params.param === 'name'" type="text" class="param-name" :placeholder="params.placeholder" @input="handlePrisonerNameInput" />
+              <input v-if="params.param == 'name'" type="text" class="param-name" :placeholder="params.placeholder"
+                @input="handlePrisonerNameInput" />
               <!-- 时间选择器 外出 -->
-              <e-picker v-else-if="params.param === 'outTime'" mode="dateTime" @change="pickeOutTime">
+              <e-picker v-else-if="params.param == 'outTime'" mode="dateTime" @change="pickeOutTime">
                 <div class="value had-border date">{{ searchParams.data[params.param] }}</div>
               </e-picker>
               <!-- 时间选择器 返回 -->
-              <e-picker v-else-if="params.param === 'backTime'" mode="dateTime" @change="pickeBackTime">
+              <e-picker v-else-if="params.param == 'backTime'" mode="dateTime" @change="pickeBackTime">
                 <div class="value had-border date">{{ searchParams.data[params.param] }}</div>
               </e-picker>
               <!-- 下拉选择 外出原因 -->
-              <xfl-select v-else-if="params.param === 'outType'" :list="searchParamList[params.list]" :clearable="false" :placeholder="params.placeholder" @change="selectOutType"></xfl-select>
+              <xfl-select v-else-if="params.param == 'outType'" :list="searchParamList[params.list]" :clearable="false"
+                :placeholder="params.placeholder" @change="selectOutType"></xfl-select>
               <!-- 下拉选择 负责民警 -->
-              <xfl-select v-else :list="searchParamList[params.list]" :clearable="false" :placeholder="params.placeholder" @change="selectDutyPolice"></xfl-select>
+              <xfl-select v-else :list="searchParamList[params.list]" :clearable="false" :placeholder="params.placeholder"
+                @change="selectDutyPolice"></xfl-select>
             </view>
           </view>
           <view class="search-btn-box">
-            <view class="search-btn" :class="{'disabled': loading}" @touchstart.stop="handleSearchRecord">查询</view>
+            <view class="search-btn" :class="{ 'disabled': loading }" @touchstart.stop="handleSearchRecord">查询</view>
           </view>
         </view>
         <view class="record-list">
           <view class="uni-flex">
-            <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-th" :class="{ 'table-th-radius-tl': item.code === 'index' }" :style="item.code === 'outTime' || item.code === 'backTime' ? 'flex: 2;' : ''">{{ item.title }}</view>
+            <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-th"
+              :class="{ 'table-th-radius-tl': item.code == 'index' }"
+              :style="item.code == 'outTime' || item.code == 'backTime' ? 'flex: 2;' : ''">{{ item.title }}</view>
           </view>
           <view class="uni-flex table-td-divider" v-if="!recordList.length">
             <view class="uni-flex-item table-td" style="text-align: center;">暂无记录</view>
           </view>
-          <scroll-view v-else scroll-y="true" style="height: 273upx; width: 100%" @scrolltolower="handleSearchDataToLower">
+          <scroll-view v-else scroll-y="true" style="height: 273upx; width: 100%"
+            @scrolltolower="handleSearchDataToLower">
             <view v-for="(record, index) in recordList" :key="record.id" class="uni-flex table-td-divider">
-              <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-td" :style="item.code === 'outTime' || item.code === 'backTime' ? 'flex: 2;' : ''">
+              <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-td"
+                :style="item.code == 'outTime' || item.code == 'backTime' ? 'flex: 2;' : ''">
                 {{ record[item.code] | dateFormatFilter(item.code, index) }}
               </view>
             </view>
@@ -73,7 +82,8 @@
         </view>
         <scroll-view scroll-y>
           <view class="person-list">
-            <view v-for="item in displayedPersonList" :key="item.dabh" class="person-list-item uni-flex uni-column inner-glow-box">
+            <view v-for="item in displayedPersonList" :key="item.dabh"
+              class="person-list-item uni-flex uni-column inner-glow-box">
               <!-- 头像 -->
               <view class="img-warrper">
                 <image class="img" :src="item.imgUrl"></image>
@@ -91,10 +101,10 @@
               </view>
               <!-- 操作按钮 带出/带回 -->
               <text class="operate-btn" :class="{
-                      'red-btn': curPage === 1,
-                      'blue-btn': curPage === 2
-                    }" @click="handleOperate(item)">
-                {{ curPage === 1 ? '带出' : '带回' }}
+                'red-btn': curPage == 1,
+                'blue-btn': curPage == 2
+              }" @click="handleOperate(item)">
+                {{ curPage == 1 ? '带出' : '带回' }}
               </text>
             </view>
           </view>
@@ -103,16 +113,17 @@
     </view>
     <neil-modal :show="isShowComfirmDialog" :autoClose="true" @close="closeComfirmDialog">
       <view class="modal-header">
-        <view class="modal-title">{{ curPage === 1 ? '外出' : '返回' }}监室</view>
+        <view class="modal-title">{{ curPage == 1 ? '外出' : '返回' }}监室</view>
         <div class="modal-close" @click.stop="closeComfirmDialog">
           <image src="/static/images/common/close.png"></image>
         </div>
       </view>
       <view class="page-horizontal-divider" style="margin-bottom: 28upx;"></view>
       <view class="comfirm-dialog-content">
-        <view v-if="curPage === 1" class="out-type-select param-item">
+        <view v-if="curPage == 1" class="out-type-select param-item">
           <text class="out-type-title">外出原因：</text>
-          <xfl-select :list="searchParamList.outTypeList" :clearable="false" placeholder="请选择外出原因" @change="selectConfirmOutType" ref="selectOutTypeInput"></xfl-select>
+          <xfl-select :list="searchParamList.outTypeList" :clearable="false" placeholder="请选择外出原因"
+            @change="selectConfirmOutType" ref="selectOutTypeInput"></xfl-select>
         </view>
         <!-- 头像 -->
         <view class="selected-prisoner-img-box inner-glow-box">
@@ -134,18 +145,18 @@
             <text class="val">负责民警：</text>
             <scroll-view scroll-x class="text-scroll">{{ personInfo.name }}</scroll-view>
           </view>
-          <view v-if="curPage === 2" class="info-out-type text-scroll-warrper">
+          <view v-if="curPage == 2" class="info-out-type text-scroll-warrper">
             <text class="val">外出原因：</text>
             <scroll-view scroll-x class="text-scroll">{{ selectedPrisoner.outType }}</scroll-view>
           </view>
         </view>
         <!-- 操作按钮 带出/带回 -->
         <text class="operate-btn" :class="{
-                'red-btn': curPage === 1,
-                'blue-btn': curPage === 2,
-                'disabled': loading
-              }" @touchstart.stop="submit">
-          {{ curPage === 1 ? '带出' : '带回' }}
+          'red-btn': curPage == 1,
+          'blue-btn': curPage == 2,
+          'disabled': loading
+        }" @touchstart.stop="submit">
+          {{ curPage == 1 ? '带出' : '带回' }}
         </text>
       </view>
     </neil-modal>
@@ -167,7 +178,7 @@ export default {
     ePicker,
     xflSelect
   },
-  data () {
+  data() {
     return {
       // 页面标题
       title: '进出监室登记',
@@ -281,7 +292,7 @@ export default {
       roomNo: uni.getStorageSync("managerInfo").roomNo,
 
       // 监室ID
-      roomId: uni.getStorageSync('managerInfo').roomId,
+      roomId: uni.getStorageSync("managerInfo").roomId,
 
       // 监室名称
       roomName: uni.getStorageSync("managerInfo").roomName,
@@ -289,7 +300,7 @@ export default {
       // 查询参数
       searchParams: {
         data: {
-          roomId: uni.getStorageSync('managerInfo').roomId,
+          roomId: uni.getStorageSync("managerInfo").roomId,
           name: '',
           outType: '',
           outTime: '',
@@ -322,112 +333,105 @@ export default {
     }),
 
     // 带回 or 带出
-    isBringOut () {
-      return this.curPage === 1;
+    isBringOut() {
+      return this.curPage == 1;
     },
 
     // 监室人员列表
-    inPrisonerList () {
-      let inList = this.prisonerList.filter(item => item.status === '0');
+    inPrisonerList() {
+      let inList = this.prisonerList.filter(item => item.status == '0');
       return inList || [];
     },
 
     // 外出人员列表
-    outPrisonerList () {
-      let outList = this.prisonerList.filter(item => item.status === '1');
+    outPrisonerList() {
+      let outList = this.prisonerList.filter(item => item.status == '1');
       return outList || [];
     },
 
     // 页面显示的人员列表
-    displayedPersonList () {
-      let personList = this.curPage === 1 ? this.inPrisonerList : this.outPrisonerList;
+    displayedPersonList() {
+      let personList = this.curPage == 1 ? this.inPrisonerList : this.outPrisonerList;
       return personList;
     }
   },
 
   filters: {
-    dateFormatFilter (value, code, index) {
+    dateFormatFilter(value, code, index) {
       if (!value && code !== 'index') return '无';
-      if (code === 'outTime' || code === 'backTime') {
+      if (code == 'outTime' || code == 'backTime') {
         return dateFormat('YYYY-MM-DD hh:mm', new Date(value));
-      } else if (code === 'index') {
+      } else if (code == 'index') {
         return index + 1;
       } else {
         return value;
       }
     }
   },
-  destroyed () {
+  destroyed() {
     this.isShowComfirmDialog = false;
   },
   methods: {
-    // 点击页面
-    handlePageClick () {
-      this.$parent.initCountTimer();
-    },
-
     // 切换页面
-    switchPage (curPage) {
+    switchPage(curPage) {
       this.curPage = curPage;
-      if (curPage === 3) {
+      if (curPage == 3) {
         this.resetSearchParams();
         this.searchRecord();
       }
     },
 
     // 输入在押人员
-    handlePrisonerNameInput (event) {
+    handlePrisonerNameInput(event) {
       this.searchParams.data.name = event.detail.value;
     },
 
     // 外出时间选择
-    pickeOutTime (outTime) {
+    pickeOutTime(outTime) {
       this.searchParams.data.outTime = outTime;
     },
 
     // 返回时间选择
-    pickeBackTime (backTime) {
+    pickeBackTime(backTime) {
       this.searchParams.data.backTime = backTime;
     },
 
     // 外出原因 下拉选择
-    selectOutType (outType) {
-      this.searchParams.data.outType = outType.orignItem.code;
+    selectOutType(outType) {
+      this.searchParams.data.outType = outType.originItem.code;
     },
 
     // 负责民警 下拉选择
-    selectDutyPolice (dutyPolice) {
-      this.searchParams.data.dutyPolice = dutyPolice.orignItem.accountName;
+    selectDutyPolice(dutyPolice) {
+      this.searchParams.data.dutyPolice = dutyPolice.originItem.accountName;
     },
 
     // 带出弹框 外出原因 下拉选择
-    selectConfirmOutType (outType) {
-      this.takeOutType = outType.orignItem.code;
+    selectConfirmOutType(outType) {
+      this.takeOutType = outType.originItem.code;
     },
 
     // 显示弹框
-    showComfirmDialog () {
+    showComfirmDialog() {
       this.isShowComfirmDialog = true;
     },
 
     // 关闭弹框
-    closeComfirmDialog () {
+    closeComfirmDialog() {
       this.takeOutType = '';
-      this.$refs.selectOutTypeInput && this.$refs.selectOutTypeInput.setItemActive(-1);
-      this.$refs.selectOutTypeInput && this.$refs.selectOutTypeInput.setInput('请选择外出原因');
       this.isShowComfirmDialog = false;
     },
 
     // 点击带回/带出按钮
-    handleOperate (selected) {
+    handleOperate(selected) {
       this.selectedPrisoner = selected;
       this.showComfirmDialog();
     },
 
     // 带出/带回提交
-    submit () {
+    submit() {
       this.loading = true;
-      if (this.curPage === 1 && !this.takeOutType) {
+      if (this.curPage == 1 && !this.takeOutType) {
         setTimeout(() => {
           this.loading = false;
         }, 2000);
@@ -437,10 +441,10 @@ export default {
     },
 
     // 前端渲染
-    changePrisonerStatus () {
+    changePrisonerStatus() {
       this.prisonerList.map(item => {
-        if (item.dabh === this.selectedPrisoner.dabh) {
-          item.status = item.status === '0' ? '1' : '0';
+        if (item.dabh == this.selectedPrisoner.dabh) {
+          item.status = item.status == '0' ? '1' : '0';
           item.outTypeCode = this.takeOutType;
         }
         return item;
@@ -449,21 +453,21 @@ export default {
     },
 
     // 获取监室人员列表
-    async getPrisonerList () {
+    async getPrisonerList() {
       let params = {
         roomNo: this.roomNo
       };
       let res = await Api.apiCall('get', Api.police.outRoomRegister.getPrisonerList, params);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.prisonerList = res.data;
       }
     },
 
     // 带出 / 带回
-    async handleTakePrisoner () {
+    async handleTakePrisoner() {
       let params = {};
       let api = '';
-      if (this.curPage === 1) {
+      if (this.curPage == 1) {
         params = {
           roomId: this.roomId,
           personCode: this.selectedPrisoner.rybh,
@@ -481,7 +485,7 @@ export default {
         api = Api.police.outRoomRegister.takeBack;
       }
       let res = await Api.apiCall('post', api, params);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.changePrisonerStatus();
         this.closeComfirmDialog();
       } else {
@@ -493,17 +497,17 @@ export default {
     },
 
     // 获取外出类型
-    async getOutTypeList () {
+    async getOutTypeList() {
       let res = await Api.apiCall('get', Api.police.outRoomRegister.getOutTypeList, null, true);
-      if (res.state.code == "200") {
+      if (res.state.code == 200) {
         this.searchParamList.outTypeList = res.data.data;
       }
     },
 
     // 获取管教民警
-    async getRoomPolices () {
+    async getRoomPolices() {
       let res = await Api.apiCall('get', Api.main.getRoomPolices + this.roomId, null, true);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         /**
          * {"data":{
          *  "roomSupervisor":{
@@ -542,12 +546,12 @@ export default {
     },
 
     // 查询记录
-    async searchRecord () {
+    async searchRecord() {
       this.loading = true;
       let res = await Api.apiCall('post', Api.police.outRoomRegister.searchRecord, this.searchParams);
-      if (res.state.code === 200) {
+      if (res.state.code == 200) {
         this.recordTotal = res.page && res.page.total || 0;
-        if (this.searchParams.page.pageIndex === 1) {
+        if (this.searchParams.page.pageIndex == 1) {
           this.recordList = res.data || [];
         } else {
           this.recordList = this.recordList.concat(res.data || []);
@@ -556,36 +560,16 @@ export default {
       setTimeout(() => {
         this.loading = false;
       }, 5000);
-      /**
-       * {"data":[{
-       *   "name":"鲜然",
-       *   "rybh":"222",
-       *   "userName":"admin",
-       *   "dabh":"007",
-       *   "outType":"家属会见",
-       *   "outTime":1576935416000,
-       *   "backTime":1576935425000}],
-       *  "id":0,
-       *  "page":{
-       *   "lastPage":1,
-       *   "nextPage":-1,
-       *   "pageCount":1,
-       *   "pageIndex":1,
-       *   "pageSize":10,
-       *   "start":0,
-       *   "total":4,
-       *   "totalPage":1},"state":{"code":200,"msg":"操作成功"}}
-       */
     },
 
     // 点击查询按钮
-    handleSearchRecord () {
+    handleSearchRecord() {
       this.searchParams.page.pageIndex = 1;
       this.searchRecord();
     },
 
     // 滑动加载
-    handleSearchDataToLower () {
+    handleSearchDataToLower() {
       if (this.recordList.length >= this.recordTotal) {
         return this.$parent.handleShowToast("暂无更多数据", "center");
       }
@@ -594,10 +578,10 @@ export default {
     },
 
     // 重置查询参数
-    resetSearchParams () {
+    resetSearchParams() {
       this.searchParams = {
         data: {
-          roomId: uni.getStorageSync('managerInfo').roomId,
+          roomId: uni.getStorageSync("managerInfo").roomId,
           name: '',
           outType: '',
           outTime: '',
@@ -610,7 +594,7 @@ export default {
         }
       };
     },
-    init () {
+    init() {
       this.getPrisonerList();
       this.getOutTypeList();
       this.getRoomPolices();
@@ -618,14 +602,15 @@ export default {
   },
 
 
-  created () {
+  created() {
     this.init();
   },
-}
+};
 </script>
 
 <style lang="less" scoped>
 .out-room-register {
+
   // 头像
   .img-warrper {
     padding: 0 15.3upx;
@@ -633,6 +618,7 @@ export default {
     height: 118.75upx;
     box-sizing: border-box;
     background-color: #fff;
+
     .img {
       width: 100%;
       height: 100%;
@@ -655,6 +641,7 @@ export default {
     justify-content: flex-start;
     align-items: flex-start;
     font-size: 16upx;
+
     .text-scroll {
       width: 100upx;
       white-space: nowrap;
@@ -669,12 +656,15 @@ export default {
     border-radius: 2px;
     font-size: 18upx;
     text-align: center;
+
     &.red-btn {
       background-color: #d22d2d;
     }
+
     &.blue-btn {
       background-color: #007aff;
     }
+
     &.disabled {
       background-color: #666;
       pointer-events: none;
@@ -688,6 +678,7 @@ export default {
     justify-content: flex-start;
     align-items: center;
     font-size: 20.83upx;
+
     .param-name {
       padding: 0 6.25upx;
       width: 235upx;
@@ -701,12 +692,14 @@ export default {
       line-height: 34.72upx;
       color: #ffffff;
     }
+
     .value {
       padding: 0 6.25upx;
       width: 235upx;
       height: 36.2upx;
       line-height: 36.2upx;
       font-size: 18.06upx;
+
       &.had-border {
         box-shadow: 0px 0px 6px 0px rgb(27, 146, 239) inset;
         background: rgba(27, 146, 239, 0.25);
@@ -714,8 +707,10 @@ export default {
         border-radius: 1px;
       }
     }
+
     .date {
       position: relative;
+
       &::after {
         position: absolute;
         right: 10.4upx;
@@ -757,6 +752,7 @@ export default {
         display: flex;
         justify-content: flex-start;
         align-items: center;
+
         .search-btn {
           margin-left: 62.5upx;
           width: 111upx;
@@ -832,6 +828,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     .modal-title {
       height: 100%;
       display: flex;
@@ -840,12 +837,14 @@ export default {
       font-weight: 500;
       color: #35fffa;
     }
+
     .modal-close {
       height: 100%;
       width: 22upx;
       display: flex;
       justify-content: center;
       align-items: center;
+
       image {
         height: 22upx;
         width: 22upx;
@@ -875,5 +874,4 @@ export default {
       margin: 17.5upx 0 45upx;
     }
   }
-}
-</style>
+}</style>

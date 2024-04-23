@@ -11,7 +11,7 @@ export const clear = (str) => {
 export const isEmpty = (obj) => {
   if (obj == null) return true;
   if (obj.length > 0) return false;
-  if (obj.length === 0) return true;
+  if (obj.length == 0) return true;
   if (typeof obj !== "object") return true;
   for (var key in obj) {
     if (hasOwnProperty.call(obj, key)) return false;
@@ -96,7 +96,7 @@ export const unique = (arr) => {
   }
   let result = [];
   for (let i = 0; i < arr.length; i++) {
-    if (result.indexOf(arr[i]) === -1) {
+    if (result.indexOf(arr[i]) == -1) {
       result.push(arr[i]);
     }
   }
@@ -163,4 +163,31 @@ export const throttle = (fn, wait = 1000) => {
       }, wait);
     }
   };
+};
+
+export const getDate = (timeStamp, startType) => {
+  if (timeStamp) {
+    return format(new Date(timeStamp), startType);
+  }
+};
+
+const getHandledValue = num => {
+  return num < 10 ? '0' + num : num;
+};
+
+export const format = (d, startType) => {
+  const year = d.getFullYear();
+  const month = getHandledValue(d.getMonth() + 1);
+  const date = getHandledValue(d.getDate());
+  const hours = getHandledValue(d.getHours());
+  const minutes = getHandledValue(d.getMinutes());
+  const second = getHandledValue(d.getSeconds());
+  let resStr = '';
+  if (startType == 'year') resStr = year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + second;
+  else if (startType == 'date') resStr = year + '-' + month + '-' + date;
+  else if (startType == 'time') resStr = year + '-' + month + '-' + date + 'T' + hours + ':' + minutes + ':' + second + '.000+08:00';
+  else if (startType == 'mouth-day') resStr = month + '-' + date;
+  else if (startType == 'minutes') resStr = year + '-' + month + '-' + date + ' ' + hours + ':' + minutes;
+  else resStr = month + '-' + date + ' ' + hours + ':' + minutes;
+  return resStr;
 };
