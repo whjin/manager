@@ -140,7 +140,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 18upx;
+  margin: 18px;
   font-size: 24upx;
   text {
     font-size: 20upx;

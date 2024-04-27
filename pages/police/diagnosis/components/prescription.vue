@@ -248,7 +248,7 @@ export default {
     handleFrequencyChange (e) {
       this.fillPrescription({
         detail: {
-          yypl: e.originItem.id
+          yypl: e.orignItem.id
         },
         index: e.rowIndex
       })
@@ -257,7 +257,7 @@ export default {
     handleUnitChange (e) {
       this.fillPrescription({
         detail: {
-          sydw: e.originItem.id
+          sydw: e.orignItem.id
         },
         index: e.rowIndex
       })
@@ -266,7 +266,7 @@ export default {
     handleGroupChange (e) {
       this.fillPrescription({
         detail: {
-          drugGroup: e.originItem.id
+          drugGroup: e.orignItem.id
         },
         index: e.rowIndex
       })
@@ -289,21 +289,21 @@ export default {
         }
       }
       let res = await Api.apiCall('post', Api.police.diagnosis.getDrugInfo, params, true);
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         this.resultList = res.data;
       }
     },
     // 频率
     async getYYPL () {
       let res = await Api.apiCall('get', Api.police.diagnosis.getYYPL, null, true);
-      if (res && res.state && res.state.code == 200) {
+      if (res && res.state && res.state.code === 200) {
         this.frequencyList = res.data;
       }
     },
     // 单位
     async getDrugUnit () {
       let res = await Api.apiCall('get', Api.police.diagnosis.getDrugUnit, null, true);
-      if (res && res.state && res.state.code == 200) {
+      if (res && res.state && res.state.code === 200) {
         this.unitList = res.data;
       }
     },

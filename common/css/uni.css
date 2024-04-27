@@ -5,10 +5,6 @@
   src: url("./static/font/uni.ttf") format("truetype");
 }
 
-.show-box {
-  position: relative;
-}
-
 view {
   color: #ffffff;
   font-size: 25upx;
@@ -171,7 +167,8 @@ form {
   line-height: 40upx;
 }
 .page-vertical-divider {
-  width: 2upx;
+  margin-right: 14.58upx;
+  width: 0.69upx;
   background-image: linear-gradient(
     to bottom,
     rgba(0, 198, 255, 0),
@@ -180,7 +177,7 @@ form {
   );
 }
 .page-horizontal-divider {
-  height: 0.69upx;
+  height: 1upx;
   background-image: linear-gradient(
     to right,
     rgba(0, 198, 255, 0),
@@ -1340,7 +1337,7 @@ loadmore .uni-loadmore {
   color: #fff;
 }
 .uni-picker-view-indicator {
-  background-color: rgba(42, 66, 115, 0.5);
+  background-color: rgba(42, 66, 115, .5);
 }
 .uni-picker-view-indicator:after,
 .uni-picker-view-indicator:before {

@@ -1,20 +1,22 @@
 <template>
-  <view class="out-room-register main-area">
+  <view class="out-room-register main-area" @touchstart.stop="handlePageClick">
     <view class="uni-flex page-title">
-      <text>{{ title }}</text>
+      <text>进出监室登记</text>
     </view>
     <view class="uni-flex uni-flex-item" style="height: 85%">
       <!-- 页面Tab -->
       <view class="uni-flex uni-column page-menu-area">
         <view v-for="tab in tabConfig" :key="tab.key" class="uni-flex uni-column page-menu"
-          :class="{ 'page-menu-activate': curPage == tab.page }" @click="switchPage(tab.page)">
+          :class="{ 'page-menu-activate': currentPage == tab.page }" @click="switchPage(tab.page)">
           <image :src="`/static/images/room/${tab.key}.png`"
             style="width: 35.41upx; height: 42.36upx; margin-top: 9.72upx"></image>
-          <text style="line-height: 20.83upx; margin-top: 13.19upx">{{ tab.title }}</text>
+          <text style="line-height: 20.83upx; margin-top: 13.19upx">{{
+            tab.title
+          }}</text>
         </view>
       </view>
       <!-- 进出监室记录 -->
-      <view v-if="curPage == 3" class="out-room-record uni-flex-item">
+      <view v-if="currentPage == 3" class="out-room-record uni-flex-item">
         <view class="search-param-toolbar">
           <view class="param-list">
             <view v-for="params in searchParamConfig" :key="params.param" class="param-item">
@@ -24,11 +26,15 @@
                 @input="handlePrisonerNameInput" />
               <!-- 时间选择器 外出 -->
               <e-picker v-else-if="params.param == 'outTime'" mode="dateTime" @change="pickeOutTime">
-                <div class="value had-border date">{{ searchParams.data[params.param] }}</div>
+                <div class="value had-border date">
+                  {{ searchParams.data[params.param] }}
+                </div>
               </e-picker>
               <!-- 时间选择器 返回 -->
               <e-picker v-else-if="params.param == 'backTime'" mode="dateTime" @change="pickeBackTime">
-                <div class="value had-border date">{{ searchParams.data[params.param] }}</div>
+                <div class="value had-border date">
+                  {{ searchParams.data[params.param] }}
+                </div>
               </e-picker>
               <!-- 下拉选择 外出原因 -->
               <xfl-select v-else-if="params.param == 'outType'" :list="searchParamList[params.list]" :clearable="false"
@@ -39,23 +45,27 @@
             </view>
           </view>
           <view class="search-btn-box">
-            <view class="search-btn" :class="{ 'disabled': loading }" @touchstart.stop="handleSearchRecord">查询</view>
+            <view class="search-btn" @touchstart.stop="handleSearchRecord">查询</view>
           </view>
         </view>
         <view class="record-list">
           <view class="uni-flex">
             <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-th"
-              :class="{ 'table-th-radius-tl': item.code == 'index' }"
-              :style="item.code == 'outTime' || item.code == 'backTime' ? 'flex: 2;' : ''">{{ item.title }}</view>
+              :class="{ 'table-th-radius-tl': item.code == 'index' }" :style="item.code == 'outTime' || item.code == 'backTime'
+                ? 'flex: 2;'
+                : ''
+                ">{{ item.title }}</view>
           </view>
           <view class="uni-flex table-td-divider" v-if="!recordList.length">
-            <view class="uni-flex-item table-td" style="text-align: center;">暂无记录</view>
+            <view class="uni-flex-item table-td" style="text-align: center">暂无记录</view>
           </view>
           <scroll-view v-else scroll-y="true" style="height: 273upx; width: 100%"
             @scrolltolower="handleSearchDataToLower">
             <view v-for="(record, index) in recordList" :key="record.id" class="uni-flex table-td-divider">
-              <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-td"
-                :style="item.code == 'outTime' || item.code == 'backTime' ? 'flex: 2;' : ''">
+              <view v-for="item in recordListTitleConfig" :key="item.code" class="uni-flex-item table-td" :style="item.code == 'outTime' || item.code == 'backTime'
+                ? 'flex: 2;'
+                : ''
+                ">
                 {{ record[item.code] | dateFormatFilter(item.code, index) }}
               </view>
             </view>
@@ -76,455 +86,368 @@
               外出人数：{{ outPrisonerList.length }}人
             </text>
           </view>
-          <text class="duty-police">
-            负责民警：{{ personInfo.name }}
-          </text>
+          <text class="duty-police"> 负责民警：{{ personInfo.name }} </text>
         </view>
         <scroll-view scroll-y>
           <view class="person-list">
-            <view v-for="item in displayedPersonList" :key="item.dabh"
+            <view v-for="item in displayedPersonList" :key="item.rybh"
               class="person-list-item uni-flex uni-column inner-glow-box">
               <!-- 头像 -->
               <view class="img-warrper">
-                <image class="img" :src="item.imgUrl"></image>
+                <image class="img" :src="item.imgUrl || defaultImgUrl" lazy-load></image>
               </view>
               <!-- 个人信息 -->
               <view class="person-info">
                 <view class="name text-scroll-warrper">
                   <text class="val">姓名：</text>
-                  <scroll-view scroll-x class="text-scroll">{{ item.name }}</scroll-view>
+                  <scroll-view scroll-x class="text-scroll">
+                    {{ item.name }}
+                  </scroll-view>
                 </view>
                 <view class="serial-num text-scroll-warrper">
                   <text class="val">编号：</text>
-                  <scroll-view scroll-x class="text-scroll">{{ item.dabh }}</scroll-view>
+                  <scroll-view scroll-x class="text-scroll">{{
+                    item.dabh
+                  }}</scroll-view>
                 </view>
               </view>
               <!-- 操作按钮 带出/带回 -->
               <text class="operate-btn" :class="{
-                'red-btn': curPage == 1,
-                'blue-btn': curPage == 2
-              }" @click="handleOperate(item)">
-                {{ curPage == 1 ? '带出' : '带回' }}
+                    'red-btn': currentPage == 1,
+                    'take-btn': currentPage == 1 && item.waitForTakeState,
+                    'blue-btn': currentPage == 2,
+                    'process-btn': currentPage == 2 && item.processState,
+                  }" @click="handleOperate(item)">
+                {{
+                  currentPage == 1
+                  ? item.waitForTakeState
+                    ? `待${item.waitForTakeType}`
+                    : "带出"
+                  : item.processState
+                    ? `${item.waitForTakeType}带回`
+                    : "带回"
+                }}
               </text>
             </view>
           </view>
         </scroll-view>
       </view>
     </view>
-    <neil-modal :show="isShowComfirmDialog" :autoClose="true" @close="closeComfirmDialog">
+    <recognition-dialogs ref="recognitionDialogs" useFor="outroom" isConfirm confirmText="人工核对无误" :regConfig="regConfig"
+      :isShow="showRecognitionDialogs" @faceRecognitionSuccess="faceRecognitionSuccess"
+      @fingerRecognitionSuccess="fingerRecognitionSuccess" @close="recognitionDialogsClose"
+      @confirm="confirmHandler"></recognition-dialogs>
+    <neil-modal :show="showComfirmDialog" :autoClose="true" @close="closeComfirmDialog">
       <view class="modal-header">
-        <view class="modal-title">{{ curPage == 1 ? '外出' : '返回' }}监室</view>
-        <div class="modal-close" @click.stop="closeComfirmDialog">
+        <view class="modal-title">{{ currentPage == 1 ? "外出" : "返回" }}监室</view>
+        <div class="modal-close" @touchstart.stop="closeComfirmDialog">
           <image src="/static/images/common/close.png"></image>
         </div>
       </view>
-      <view class="page-horizontal-divider" style="margin-bottom: 28upx;"></view>
+      <view class="page-horizontal-divider" style="margin-bottom: 28upx"></view>
       <view class="comfirm-dialog-content">
-        <view v-if="curPage == 1" class="out-type-select param-item">
+        <view v-if="currentPage == 1" class="out-type-select param-item">
           <text class="out-type-title">外出原因：</text>
-          <xfl-select :list="searchParamList.outTypeList" :clearable="false" placeholder="请选择外出原因"
-            @change="selectConfirmOutType" ref="selectOutTypeInput"></xfl-select>
+          <xfl-select ref="outTypeRef" :list="searchParamList.outTypeList"
+            :class="{ 'disabled-select': !!selectedPrisoner.waitForTake }" :clearable="false" :placeholder="'请选择外出原因'"
+            @change="selectConfirmOutType"></xfl-select>
         </view>
         <!-- 头像 -->
         <view class="selected-prisoner-img-box inner-glow-box">
           <view class="img-warrper">
-            <image class="img" :src="selectedPrisoner.imgUrl"></image>
+            <image class="img" :src="selectedPrisoner.imgUrl || defaultImgUrl" lazy-load></image>
           </view>
         </view>
         <!-- 人员信息 -->
         <view class="selected-prisoner-info">
           <view class="info-name text-scroll-warrper">
             <text class="val">姓名：</text>
-            <scroll-view scroll-x class="text-scroll">{{ selectedPrisoner.name }}</scroll-view>
+            <scroll-view scroll-x class="text-scroll">
+              {{ selectedPrisoner.name }}</scroll-view>
           </view>
           <view class="info-dabh text-scroll-warrper">
             <text class="val">编号：</text>
-            <scroll-view scroll-x class="text-scroll">{{ selectedPrisoner.dabh }}</scroll-view>
+            <scroll-view scroll-x class="text-scroll">
+              {{ selectedPrisoner.dabh }}
+            </scroll-view>
           </view>
           <view class="info-user-name text-scroll-warrper">
             <text class="val">负责民警：</text>
-            <scroll-view scroll-x class="text-scroll">{{ personInfo.name }}</scroll-view>
+            <scroll-view scroll-x class="text-scroll">{{
+              personInfo.name
+            }}</scroll-view>
           </view>
-          <view v-if="curPage == 2" class="info-out-type text-scroll-warrper">
+          <view v-if="currentPage == 2" class="info-out-type text-scroll-warrper">
             <text class="val">外出原因：</text>
-            <scroll-view scroll-x class="text-scroll">{{ selectedPrisoner.outType }}</scroll-view>
+            <scroll-view scroll-x class="text-scroll">{{
+              selectedPrisoner.outType
+            }}</scroll-view>
           </view>
         </view>
         <!-- 操作按钮 带出/带回 -->
         <text class="operate-btn" :class="{
-          'red-btn': curPage == 1,
-          'blue-btn': curPage == 2,
-          'disabled': loading
-        }" @touchstart.stop="submit">
-          {{ curPage == 1 ? '带出' : '带回' }}
+              'red-btn': currentPage == 1,
+              'blue-btn': currentPage == 2,
+            }" @touchstart.stop="submit">
+          {{ currentPage == 1 ? "带出" : "带回" }}
         </text>
       </view>
+    </neil-modal>
+    <!-- 带回提示弹框 -->
+    <neil-modal :show="showTakeBackTips">
+      <div class="takeback-modal-container">
+        <div class="modal-header">
+          <div class="modal-title">温馨提示</div>
+          <div class="modal-close" @click="closeModal('TakeBackTips')">
+            <image src="/static/images/common/close.png"></image>
+          </div>
+        </div>
+        <div class="page-horizontal-divider"></div>
+        <div class="takeback-modal-box">
+          <common-icons iconType="iconfail" size="100" color="#fff"></common-icons>
+          <text class="takeback-content">{{ takeBackTips }}</text>
+        </div>
+      </div>
     </neil-modal>
   </view>
 </template>
 
 <script>
-import Api from '@/common/api.js';
-
+import Api from "@/common/api.js";
 import { mapState } from "vuex";
 import ePicker from "@/components/e-picker/e-picker.vue";
 import xflSelect from "@/components/xfl-select/xfl-select.vue";
-
 import { dateFormat } from "@/common/utils/util.js";
 
 export default {
-  name: 'outRoomRegister',
+  name: "outRoomRegister",
   component: {
     ePicker,
-    xflSelect
+    xflSelect,
   },
   data() {
     return {
-      // 页面标题
-      title: '进出监室登记',
-
+      // 认证弹框
+      showRecognitionDialogs: false,
+      regConfig: {
+        regName: "",
+        rybh: "",
+      },
       // 当前页面
-      curPage: 1,
-
+      currentPage: 1,
+      // 弹框
+      showComfirmDialog: false,
+      // 带回提示弹框
+      showTakeBackTips: false,
+      // 带回提示信息
+      takeBackTips: "",
+      // 带出 带回 被选中的人员
+      selectedPrisoner: {},
+      // 外出原因
+      takeOutType: "",
+      // 默认头像
+      defaultImgUrl: "/static/images/room/none.jpg",
       // 页面tab配置
       tabConfig: [
         {
-          title: '外出监室\n登记',
+          title: "外出监室\n登记",
           page: 1,
-          key: 'out'
+          key: "out",
         },
         {
-          title: '返回监室\n登记',
+          title: "返回监室\n登记",
           page: 2,
-          key: 'in'
+          key: "in",
         },
         {
-          title: '进出监室\n记录',
+          title: "进出监室\n记录",
           page: 3,
-          key: 'record'
+          key: "record",
         },
       ],
-
       // 查询参数配置
       searchParamConfig: [
         {
-          title: '在押人员',
-          param: 'name',
-          placeholder: '请输入在押人员'
+          title: "在押人员",
+          param: "name",
+          placeholder: "请输入在押人员",
         },
         {
-          title: '外出原因',
-          param: 'outType',
-          placeholder: '请选择外出原因',
-          list: 'outTypeList'
+          title: "外出原因",
+          param: "outType",
+          placeholder: "请选择外出原因",
+          list: "outTypeList",
         },
         {
-          title: '外出时间',
-          param: 'outTime'
+          title: "外出时间",
+          param: "outTime",
         },
         {
-          title: '返回时间',
-          param: 'backTime'
+          title: "返回时间",
+          param: "backTime",
         },
         {
-          title: '带出民警',
-          param: 'takeOutPolice',
-          placeholder: '请选择负责民警',
-          list: 'policeList'
-        }
+          title: "带出民警",
+          param: "takeOutPolice",
+          placeholder: "请选择负责民警",
+          list: "policeList",
+        },
       ],
-
       // 外出原因/负责民警 可选列表
       searchParamList: {
         // 外出类型
         outTypeList: [],
-
         // 管教民警
         policeList: [],
       },
-
       // 在押人员列表
       prisonerList: [],
-
       // 记录列表头部标题
       recordListTitleConfig: [
         {
-          title: '序号',
-          code: 'index'
+          title: "序号",
+          code: "index",
         },
         {
-          title: '在押人员',
-          code: 'name'
+          title: "在押人员",
+          code: "name",
         },
         {
-          title: '编号',
-          code: 'dabh'
+          title: "编号",
+          code: "dabh",
         },
         {
-          title: '外出原因',
-          code: 'outType'
+          title: "外出原因",
+          code: "outType",
         },
         {
-          title: '外出时间',
-          code: 'outTime'
+          title: "外出时间",
+          code: "outTime",
         },
         {
-          title: '带出民警',
-          code: 'takeOutPolice'
+          title: "带出民警",
+          code: "takeOutPolice",
         },
         {
-          title: '返回时间',
-          code: 'backTime'
+          title: "返回时间",
+          code: "backTime",
         },
         {
-          title: '带回民警',
-          code: 'takeBackPolice'
-        }
+          title: "带回民警",
+          code: "takeBackPolice",
+        },
       ],
-
       // 记录列表
       recordList: [],
-
       // 记录列表总数
       recordTotal: 0,
-
       // 监室号
       roomNo: uni.getStorageSync("managerInfo").roomNo,
-
       // 监室ID
       roomId: uni.getStorageSync("managerInfo").roomId,
-
       // 监室名称
       roomName: uni.getStorageSync("managerInfo").roomName,
-
       // 查询参数
       searchParams: {
         data: {
           roomId: uni.getStorageSync("managerInfo").roomId,
-          name: '',
-          outType: '',
-          outTime: '',
-          backTime: '',
-          dutyPolice: ''
+          name: "",
+          outType: "",
+          outTime: "",
+          backTime: "",
+          dutyPolice: "",
         },
         page: {
           pageIndex: 1,
-          pageSize: 10
-        }
+          pageSize: 10,
+        },
       },
-
-      // 弹框
-      isShowComfirmDialog: false,
-
-      // 带出 带回 被选中的人员
-      selectedPrisoner: {},
-
-      // 带出接口参数 外出原因
-      takeOutType: '',
-
-      // 请求中
-      loading: false
     };
   },
   computed: {
     ...mapState({
       // 登录人员信息
-      personInfo: (state) => state.app.personInfo
+      personInfo: (state) => state.app.personInfo,
     }),
-
     // 带回 or 带出
     isBringOut() {
-      return this.curPage == 1;
+      return this.currentPage == 1;
     },
-
     // 监室人员列表
     inPrisonerList() {
-      let inList = this.prisonerList.filter(item => item.status == '0');
+      let inList = this.prisonerList.filter((item) => item.status == "0");
       return inList || [];
     },
-
     // 外出人员列表
     outPrisonerList() {
-      let outList = this.prisonerList.filter(item => item.status == '1');
+      let outList = this.prisonerList.filter((item) => item.status == "1");
       return outList || [];
     },
-
     // 页面显示的人员列表
     displayedPersonList() {
-      let personList = this.curPage == 1 ? this.inPrisonerList : this.outPrisonerList;
+      let personList =
+        this.currentPage == 1 ? this.inPrisonerList : this.outPrisonerList;
       return personList;
-    }
+    },
   },
-
   filters: {
     dateFormatFilter(value, code, index) {
-      if (!value && code !== 'index') return '无';
-      if (code == 'outTime' || code == 'backTime') {
-        return dateFormat('YYYY-MM-DD hh:mm', new Date(value));
-      } else if (code == 'index') {
+      if (!value && code !== "index") return "无";
+      if (code == "outTime" || code == "backTime") {
+        return dateFormat("YYYY-MM-DD hh:mm", new Date(value));
+      } else if (code == "index") {
         return index + 1;
       } else {
         return value;
       }
-    }
+    },
+  },
+  created() {
+    this.getOutTypeInfo();
+    this.getRoomPolices();
+  },
+  mounted() {
+    this.getPrisonerInfo();
   },
   destroyed() {
-    this.isShowComfirmDialog = false;
+    this.showComfirmDialog = false;
   },
   methods: {
+    // 点击页面
+    handlePageClick() {
+      this.$parent.initCountTimer();
+    },
     // 切换页面
-    switchPage(curPage) {
-      this.curPage = curPage;
-      if (curPage == 3) {
+    switchPage(currentPage) {
+      this.currentPage = currentPage;
+      if (currentPage == 3) {
         this.resetSearchParams();
         this.searchRecord();
-      }
-    },
-
-    // 输入在押人员
-    handlePrisonerNameInput(event) {
-      this.searchParams.data.name = event.detail.value;
-    },
-
-    // 外出时间选择
-    pickeOutTime(outTime) {
-      this.searchParams.data.outTime = outTime;
-    },
-
-    // 返回时间选择
-    pickeBackTime(backTime) {
-      this.searchParams.data.backTime = backTime;
-    },
-
-    // 外出原因 下拉选择
-    selectOutType(outType) {
-      this.searchParams.data.outType = outType.originItem.code;
-    },
-
-    // 负责民警 下拉选择
-    selectDutyPolice(dutyPolice) {
-      this.searchParams.data.dutyPolice = dutyPolice.originItem.accountName;
-    },
-
-    // 带出弹框 外出原因 下拉选择
-    selectConfirmOutType(outType) {
-      this.takeOutType = outType.originItem.code;
-    },
-
-    // 显示弹框
-    showComfirmDialog() {
-      this.isShowComfirmDialog = true;
-    },
-
-    // 关闭弹框
-    closeComfirmDialog() {
-      this.takeOutType = '';
-      this.isShowComfirmDialog = false;
-    },
-
-    // 点击带回/带出按钮
-    handleOperate(selected) {
-      this.selectedPrisoner = selected;
-      this.showComfirmDialog();
-    },
-
-    // 带出/带回提交
-    submit() {
-      this.loading = true;
-      if (this.curPage == 1 && !this.takeOutType) {
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
-        return this.$parent.handleShowToast("请选择外出原因！", "center");
-      }
-      this.handleTakePrisoner();
-    },
-
-    // 前端渲染
-    changePrisonerStatus() {
-      this.prisonerList.map(item => {
-        if (item.dabh == this.selectedPrisoner.dabh) {
-          item.status = item.status == '0' ? '1' : '0';
-          item.outTypeCode = this.takeOutType;
-        }
-        return item;
-      });
-      this.$parent.handleShowToast("操作成功！", "center");
-    },
-
-    // 获取监室人员列表
-    async getPrisonerList() {
-      let params = {
-        roomNo: this.roomNo
-      };
-      let res = await Api.apiCall('get', Api.police.outRoomRegister.getPrisonerList, params);
-      if (res.state.code == 200) {
-        this.prisonerList = res.data;
-      }
-    },
-
-    // 带出 / 带回
-    async handleTakePrisoner() {
-      let params = {};
-      let api = '';
-      if (this.curPage == 1) {
-        params = {
-          roomId: this.roomId,
-          personCode: this.selectedPrisoner.rybh,
-          outType: this.takeOutType,
-          takeOutPolice: this.personInfo.code
-        };
-        api = Api.police.outRoomRegister.takeOut;
       } else {
-        params = {
-          roomId: this.roomId,
-          outType: this.selectedPrisoner.outTypeCode,
-          personCode: this.selectedPrisoner.rybh,
-          takeBackPolice: this.personInfo.code
-        };
-        api = Api.police.outRoomRegister.takeBack;
+        this.getPrisonerInfo();
       }
-      let res = await Api.apiCall('post', api, params);
-      if (res.state.code == 200) {
-        this.changePrisonerStatus();
-        this.closeComfirmDialog();
-      } else {
-        this.$parent.handleShowToast("操作失败！", "center");
-      }
-      setTimeout(() => {
-        this.loading = false;
-      }, 5000);
     },
-
     // 获取外出类型
-    async getOutTypeList() {
-      let res = await Api.apiCall('get', Api.police.outRoomRegister.getOutTypeList, null, true);
-      if (res.state.code == 200) {
+    async getOutTypeInfo() {
+      let res = await Api.apiCall(
+        "get",
+        Api.police.outRoomRegister.getOutTypeList,
+        null,
+        true
+      );
+      if (res.state.code == "200") {
         this.searchParamList.outTypeList = res.data.data;
       }
     },
-
     // 获取管教民警
     async getRoomPolices() {
-      let res = await Api.apiCall('get', Api.main.getRoomPolices + this.roomId, null, true);
+      let res = await Api.apiCall(
+        "get",
+        Api.main.getRoomPolices + this.roomId,
+        null,
+        true
+      );
       if (res.state.code == 200) {
-        /**
-         * {"data":{
-         *  "roomSupervisor":{
-         *    "name":"曾兆明",
-         *    "id":"2"
-         *  },
-         * "coordinatingPolice":[
-         *    {
-         *      "name":"欧阳韵雄",
-         *      "id":"4"
-         *    },
-         *    {
-         *      "name":"买买提依明.哈斯木",
-         *      "id":"5"
-         *    }]
-         * },"id":0,"state":{"code":200,"msg":"操作成功"}}
-         */
         let list = [];
         let data = res.data;
         // 主管民警
@@ -533,41 +456,217 @@ export default {
         // 协管民警
         let coordinatingPolice = data.coordinatingPolice;
         if (coordinatingPolice && coordinatingPolice.length) {
-          coordinatingPolice.forEach(item => {
+          coordinatingPolice.forEach((item) => {
             list.push(item);
           });
         }
-
-        this.searchParamList.policeList = list.length && list.map(item => {
-          item.value = item.name;
-          return item;
-        }) || [];
+        this.searchParamList.policeList =
+          (list.length &&
+            list.map((item) => {
+              item.value = item.name;
+              return item;
+            })) ||
+          [];
       }
     },
-
+    // 获取监室人员列表
+    async getPrisonerInfo() {
+      let params = {
+        roomNo: this.roomNo,
+      };
+      let res = await Api.apiCall(
+        "get",
+        Api.police.outRoomRegister.getPrisonerList,
+        params
+      );
+      if (res.state.code == "200") {
+        this.prisonerList = res.data;
+        this.prisonerList.map((item) => {
+          item.waitForTakeState = Reflect.has(item, "waitForTake");
+          item.processState = Reflect.has(item, "processCode");
+          if (Reflect.has(item, "waitForTake")) {
+            item.waitForTakeType =
+              item.waitForTake == "01"
+                ? "家属会见"
+                : item.waitForTake == "02"
+                  ? "律师会见"
+                  : "提讯";
+          }
+        });
+      }
+    },
+    // 带出弹框 外出原因 下拉选择
+    selectConfirmOutType(outType) {
+      this.takeOutType = outType.orignItem.code;
+    },
+    // 人工核对确认
+    confirmHandler() {
+      this.handleTakePrisoner();
+    },
+    // 点击带回/带出按钮
+    handleOperate(item) {
+      this.selectedPrisoner = item;
+      const { name, rybh } = item;
+      this.regConfig = {
+        rybh,
+        regName: name,
+      };
+      this.showComfirmDialog = true;
+      if (this.currentPage == 1) {
+        this.takeOutType = item.waitForTake ? item.waitForTake : "";
+        let outType = this.selectedPrisoner.waitForTakeType
+          ? this.selectedPrisoner.waitForTakeType
+          : "请选择外出原因";
+        this.$refs.outTypeRef && this.$refs.outTypeRef.setInput(outType);
+      }
+    },
+    // 带出/带回提交
+    submit() {
+      if (this.currentPage == 1 && !this.takeOutType) {
+        return this.$parent.handleShowToast("请选择外出原因！", "center");
+      }
+      this.showComfirmDialog = false;
+      // 人脸验证开关
+      let faceIdVerify = uni.getStorageSync("faceIdVerify");
+      if (faceIdVerify == "1") {
+        this.showRecognitionDialogs = true;
+        this.$nextTick(() => {
+          this.$refs.recognitionDialogs &&
+            this.$refs.recognitionDialogs.startRecognition();
+        });
+      } else {
+        this.handleTakePrisoner();
+      }
+    },
+    // 人脸认证成功回调
+    faceRecognitionSuccess() {
+      this.verifySuccess();
+    },
+    // 指纹认证成功回调
+    fingerRecognitionSuccess(res) {
+      if (Reflect.has(this.selectedPrisoner, "mKeys")) {
+        const { mKeys } = this.selectedPrisoner;
+        if (mKeys.includes(String(res.mKey))) {
+          this.verifySuccess();
+        } else {
+          this.voiceBroadcast("验证不通过，请确认在押人员信息");
+        }
+      } else {
+        this.voiceBroadcast("指纹识别失败，没有录入该指纹");
+      }
+    },
+    // 验证成功
+    verifySuccess() {
+      this.voiceBroadcast("验证通过");
+      setTimeout(() => {
+        this.recognitionDialogsClose();
+        this.handleTakePrisoner();
+      }, 2000);
+    },
+    // 关闭认证弹框
+    recognitionDialogsClose() {
+      this.showRecognitionDialogs = false;
+      this.regConfig = {
+        rybh: "",
+        regName: "",
+      };
+    },
+    // 带出 / 带回
+    async handleTakePrisoner() {
+      let params = {};
+      let api = "";
+      if (this.currentPage == 1) {
+        params = {
+          roomId: this.roomId,
+          personCode: this.selectedPrisoner.rybh,
+          outType: this.takeOutType,
+          takeOutPolice: this.personInfo.code,
+        };
+        api = Api.police.outRoomRegister.takeOut;
+      } else {
+        params = {
+          roomId: this.roomId,
+          outType: this.selectedPrisoner.outTypeCode,
+          personCode: this.selectedPrisoner.rybh,
+          takeBackPolice: this.personInfo.code,
+        };
+        api = Api.police.outRoomRegister.takeBack;
+      }
+      let res = await Api.apiCall("post", api, params);
+      if (res.state.code == 200) {
+        this.changePrisonerStatus();
+        this.closeComfirmDialog();
+      } else {
+        if (this.currentPage == 1) {
+          this.$parent.handleShowToast("操作失败！", "center");
+        } else {
+          this.takeBackTips = res.state.msg || "操作失败";
+          this.openModal("TakeBackTips");
+        }
+      }
+    },
+    // 前端渲染
+    changePrisonerStatus() {
+      this.prisonerList.map((item) => {
+        if (item.rybh == this.selectedPrisoner.rybh) {
+          item.status = item.status == "0" ? "1" : "0";
+          item.outTypeCode = this.takeOutType;
+        }
+        return item;
+      });
+      this.$parent.handleShowToast("操作成功！", "center");
+    },
+    // 关闭弹框
+    closeComfirmDialog() {
+      this.takeOutType = "";
+      if (this.$refs.outTypeRef) {
+        this.$refs.outTypeRef.activeIndex = -1;
+        this.$refs.outTypeRef && this.$refs.outTypeRef.clearInput();
+        this.$refs.outTypeRef && this.$refs.outTypeRef.onListHide();
+      }
+      this.showComfirmDialog = false;
+    },
+    // 输入在押人员
+    handlePrisonerNameInput(event) {
+      this.searchParams.data.name = event.detail.value;
+    },
+    // 外出时间选择
+    pickeOutTime(outTime) {
+      this.searchParams.data.outTime = outTime;
+    },
+    // 返回时间选择
+    pickeBackTime(backTime) {
+      this.searchParams.data.backTime = backTime;
+    },
+    // 外出原因 下拉选择
+    selectOutType(outType) {
+      this.searchParams.data.outType = outType.orignItem.code;
+    },
+    // 负责民警 下拉选择
+    selectDutyPolice(dutyPolice) {
+      this.searchParams.data.dutyPolice = dutyPolice.orignItem.accountName;
+    },
     // 查询记录
     async searchRecord() {
-      this.loading = true;
-      let res = await Api.apiCall('post', Api.police.outRoomRegister.searchRecord, this.searchParams);
+      let res = await Api.apiCall(
+        "post",
+        Api.police.outRoomRegister.searchRecord,
+        this.searchParams
+      );
       if (res.state.code == 200) {
-        this.recordTotal = res.page && res.page.total || 0;
+        this.recordTotal = (res.page && res.page.total) || 0;
         if (this.searchParams.page.pageIndex == 1) {
           this.recordList = res.data || [];
         } else {
           this.recordList = this.recordList.concat(res.data || []);
         }
       }
-      setTimeout(() => {
-        this.loading = false;
-      }, 5000);
     },
-
     // 点击查询按钮
     handleSearchRecord() {
       this.searchParams.page.pageIndex = 1;
       this.searchRecord();
     },
-
     // 滑动加载
     handleSearchDataToLower() {
       if (this.recordList.length >= this.recordTotal) {
@@ -576,34 +675,38 @@ export default {
       this.searchParams.page.pageIndex += 1;
       this.searchRecord();
     },
-
     // 重置查询参数
     resetSearchParams() {
       this.searchParams = {
         data: {
           roomId: uni.getStorageSync("managerInfo").roomId,
-          name: '',
-          outType: '',
-          outTime: '',
-          backTime: '',
-          dutyPolice: ''
+          name: "",
+          outType: "",
+          outTime: "",
+          backTime: "",
+          dutyPolice: "",
         },
         page: {
           pageIndex: 1,
-          pageSize: 10
-        }
+          pageSize: 10,
+        },
       };
     },
-    init() {
-      this.getPrisonerList();
-      this.getOutTypeList();
-      this.getRoomPolices();
-    }
-  },
-
-
-  created() {
-    this.init();
+    // 语音播放
+    voiceBroadcast(voiceText) {
+      let options = {
+        content: voiceText,
+      };
+      getApp().globalData.Base.speech(options);
+    },
+    // 打开弹框
+    openModal(type) {
+      this[`show${type}`] = true;
+    },
+    // 关闭弹框
+    closeModal(type) {
+      this[`show${type}`] = false;
+    },
   },
 };
 </script>
@@ -661,13 +764,16 @@ export default {
       background-color: #d22d2d;
     }
 
+    &.take-btn {
+      background-color: #ff9900;
+    }
+
     &.blue-btn {
       background-color: #007aff;
     }
 
-    &.disabled {
-      background-color: #666;
-      pointer-events: none;
+    &.process-btn {
+      background-color: #ff9900;
     }
   }
 
@@ -715,11 +821,11 @@ export default {
         position: absolute;
         right: 10.4upx;
         bottom: 6.95upx;
-        content: '';
+        content: "";
         display: inline-block;
         width: 20.83upx;
         height: 20.83upx;
-        background-image: url('../../../static/images/check/calendar.png');
+        background-image: url("../../../static/images/check/calendar.png");
         background-size: cover;
       }
     }
@@ -762,11 +868,6 @@ export default {
           background-color: #0475f2;
           border-radius: 4px;
           font-size: 18.06upx;
-
-          &.disabled {
-            background-color: #666;
-            pointer-events: none;
-          }
         }
       }
     }
@@ -863,6 +964,10 @@ export default {
 
     .out-type-select {
       margin-bottom: 28upx;
+
+      .disabled-select {
+        pointer-events: none;
+      }
     }
 
     .selected-prisoner-img-box {
@@ -874,4 +979,57 @@ export default {
       margin: 17.5upx 0 45upx;
     }
   }
-}</style>
+}
+
+.takeback-modal-container {
+  width: 556upx;
+  height: 332upx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+
+  .modal-header {
+    height: 61.11upx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 27.77upx;
+
+    .modal-title {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-size: 22.22upx;
+      font-weight: 500;
+      color: #35fffa;
+    }
+
+    .modal-close {
+      height: 100%;
+      width: 22upx;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      image {
+        height: 22upx;
+        width: 22upx;
+      }
+    }
+  }
+
+  .takeback-modal-box {
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .takeback-content {
+      font-size: 20upx;
+      color: #35fffa;
+    }
+  }
+}
+</style>

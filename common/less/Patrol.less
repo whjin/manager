@@ -1,0 +1,231 @@
+.patrol-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  .patrol-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    .patrol-title {
+      padding: 0 0 13.88upx 45upx;
+      text {
+        color: #35fffa;
+        font-size: 27.77upx;
+        font-weight: bold;
+      }
+    }
+    .patrol-content {
+      display: flex;
+      flex: 1;
+      padding: 0 27.77upx;
+      .patrol-menu-list {
+        width: 148upx;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .patrol-menu-item {
+          height: 120upx;
+          width: 120upx;
+          box-sizing: border-box;
+          margin-bottom: 32upx;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: rgba(93, 166, 222, 0.5);
+          border-radius: 3.88upx;
+          text {
+            margin-top: 6.88upx;
+            font-size: 18upx;
+            font-weight: 400;
+            color: #fff;
+          }
+        }
+        .patrol-menu-active {
+          background: rgba(0, 122, 255, 0.9);
+        }
+      }
+      .patrol-table-wrapper {
+        height: 100%;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        color: #fff;
+        .button {
+          width: 82upx;
+          height: 32upx;
+          font-size: 16upx;
+          font-weight: 500;
+          border-radius: 3.88upx;
+          background: rgba(0, 122, 255, 0.99);
+          border: 1upx solid rgba(0, 122, 255, 0.99);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 6.88upx;
+        }
+        .table-head {
+          display: flex;
+          .table-head-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18.05upx;
+            font-weight: bold;
+            line-height: 43.75upx;
+            background: rgba(17, 62, 141, 0.5);
+          }
+        }
+        .patrol-table-scroll,
+        .patrol-clock-scroll {
+          height: 460upx;
+          .table-content-list {
+            height: 52upx;
+            display: flex;
+            border-bottom: 1upx solid rgba(17, 62, 141, 0.9);
+            .content-item,
+            .content-section {
+              font-size: 16upx;
+              font-weight: 400;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .content-section {
+              max-height: 100%;
+              box-sizing: border-box;
+              overflow-y: auto;
+              text-align: center;
+              padding: 6.88upx;
+              .content {
+                max-height: 100%;
+                box-sizing: border-box;
+                display: inline-block;
+                text-align: left;
+                overflow: auto;
+              }
+            }
+          }
+          .table-content-empty {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24upx;
+          }
+        }
+        .patrol-clock-scroll {
+          height: 420upx;
+        }
+        .patrol-button {
+          height: 58upx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .button {
+            width: 112upx;
+            height: 42upx;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18.05upx;
+            border-radius: 4upx;
+            background-color: rgba(0, 122, 255, 0.99);
+            border: 1upx solid rgba(9, 122, 255, 0.99);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .button:hover {
+            opacity: 0.65;
+          }
+        }
+      }
+    }
+  }
+  .neil-modal-container {
+    .common-modal-container {
+      width: 680upx;
+      height: 500upx;
+      box-sizing: border-box;
+      padding: 0 27.77upx;
+      text {
+        font-size: 20upx;
+        color: #35fffa;
+        font-weight: bold;
+      }
+      .modal-header {
+        height: 61.11upx;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .modal-title {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          font-size: 22.22upx;
+          font-weight: 500;
+          color: #35fffa;
+        }
+        .modal-close {
+          height: 100%;
+          width: 22upx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          image {
+            height: 22upx;
+            width: 22upx;
+          }
+        }
+      }
+      .common-modal-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        .form-item {
+          display: flex;
+          align-items: flex-start;
+          font-size: 24upx;
+          color: #35fffa;
+          box-sizing: border-box;
+          margin: 13.88upx 27.77upx;
+          textarea {
+            width: 480upx;
+            height: 180upx;
+            display: flex;
+            flex: 1;
+            font-size: 16upx;
+            color: #fff;
+            padding: 10.38upx;
+            border: #1b92ef 1px solid;
+            border-radius: 3.88upx;
+            background: rgba(27, 146, 239, 0.25);
+            box-shadow: 0px 0px 2px 2px rgba(27, 146, 239, 0.45) inset;
+          }
+        }
+        .form-button {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 24upx;
+          .button {
+            width: 112upx;
+            height: 43.05upx;
+            color: #fff;
+            background: #007aff;
+            border-radius: 4upx;
+            font-size: 18.05upx;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+}

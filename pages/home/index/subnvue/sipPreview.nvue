@@ -1,0 +1,45 @@
+<template>
+	<Sip-Preview ref="sipPreview" style="width: 673px;height: 356px;" @fullscreenchange="previewFullScreen"></Sip-Preview>
+</template>
+
+<script>
+export default {
+	created() {
+		const _this = this;
+		uni.getSubNVueById('sipPreview').hide();
+		uni.$on('set-preview', () => {
+			_this.$refs.sipPreview.setFullScreen();
+		});
+		uni.$on('resize-preview', () => {
+			_this.$refs.sipPreview.setMiniScreen();
+		});
+	},
+	onUnload() {
+		uni.$off('set-preview');
+		uni.$off('resize-preview');
+	},
+	methods: {
+		previewFullScreen(e) {
+			if (e.detail.isFullScreen) {
+				uni.getSubNVueById('sipRemote').hide();
+				uni.getSubNVueById('sipPreview').setStyle({
+					top: '0',
+					left: '0',
+					width: '1920',
+					height: '1080'
+				});
+			} else {
+				uni.getSubNVueById('sipRemote').show();
+				uni.getSubNVueById('sipPreview').setStyle({
+					top: '288px',
+					left: '1132px',
+					width: '673',
+					height: '356'
+				});
+			}
+		}
+	}
+};
+</script>
+
+<style></style>

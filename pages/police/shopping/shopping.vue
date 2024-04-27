@@ -1,11 +1,11 @@
 <template>
-  <view class="shopping main-area">
+  <view class="shopping main-area" @touchstart.stop="handlePageClick">
     <view class="uni-flex page-title">
       <text>{{ title }}</text>
     </view>
     <view class="uni-flex uni-flex-item" style="width: 100%; height: 85%">
       <view class="tabs-list">
-        <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page == curPage }">
+        <view v-for="tab in tabConfig" :key="tab.page" class="tab" :class="{ 'active': tab.page === curPage }">
           <common-icons :iconType="tab.icon" size="39" color="#fff" />
           <text class="title">{{ tab.title }}</text>
         </view>
@@ -39,12 +39,12 @@
             <ul class="list" v-if="shoppingList && shoppingList.length && shoppingList[0]">
               <li v-for="(record, index) in shoppingList" :key="record.detailNo" class="list-row">
                 <template v-for="(config) in headerConfig">
-                  <text v-if="config.code == 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
-                  <text v-else-if="config.code == 'printTime' || config.code == 'confirmTime'" :key="config.code + 0"
+                  <text v-if="config.code === 'index'" :key="config.code" class="list-col">{{ index + 1 }}</text>
+                  <text v-else-if="config.code === 'printTime' || config.code === 'confirmTime'" :key="config.code + 0"
                     class="list-col col-2">{{ record[config.code] | dateFormatFilter }}</text>
-                  <text v-else-if="config.code == 'confirmStatus'" :key="config.code + 1" class="list-col">{{
+                  <text v-else-if="config.code === 'confirmStatus'" :key="config.code + 1" class="list-col">{{
                     Number(record[config.code]) ? '已确认' : '未确认' }}</text>
-                  <text v-else :key="config.code + 2" class="list-col" :class="{ 'col-2': config.code == 'dabh' }">{{
+                  <text v-else :key="config.code + 2" class="list-col" :class="{ 'col-2': config.code === 'dabh' }">{{
                     record[config.code] }}</text>
                 </template>
               </li>
@@ -161,6 +161,10 @@ export default {
     }
   },
   methods: {
+    // 点击页面
+    handlePageClick(e) {
+      this.$parent.initCountTimer();
+    },
     handleSearchDataToLower() {
       if (this.shoppingList.length >= this.listTotal) {
         return this.$parent.handleShowToast("暂无更多数据", "center");
@@ -175,7 +179,7 @@ export default {
       this.searchParams.name = val.name;
     },
     setConfirmStatus(val) {
-      this.searchParams.confirmStatus = val.originItem.code;
+      this.searchParams.confirmStatus = val.orignItem.code;
     },
     // 获取订单确认记录
     async getConfirmList() {
@@ -184,10 +188,10 @@ export default {
         pageParam: this.pageParam
       };
       let res = await Api.apiCall('post', Api.police.shopping.getConfirmList, params, true);
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         let data = (res && res.data) || [];
         let total = (res.page && res.page.total) || 0;
-        if (this.pageParam.pageIndex == 1) {
+        if (this.pageParam.pageIndex === 1) {
           this.shoppingList = data;
         } else {
           this.shoppingList = this.recordList.concat(data);
@@ -217,10 +221,6 @@ export default {
 <style lang="less" scoped>
 @import '@/common/less/form.less';
 @import '@/common/less/unitConfig.less';
-
-.show-box {
-  position: relative;
-}
 
 .tabs-list {
   .px2upx(padding-left, 69);

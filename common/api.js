@@ -1,12 +1,10 @@
 export default {
-  // 主页
+  // 主页|在押人员
   index: {
-    // 获取APP配置菜单
-    getAppModuleConf: "terminal/terAppModuleConf/getAppModuleConf",
     // 获取缓存信息
     getAllSetting: "terminal/terSetting/all",
     // 获取分机信息
-    getTerminalByIp: "terminal/terTerminalInfo/getTerminalByIp",
+    getTerminalInfo: "terminal/terTerminalInfo/getTerminalByIp",
     // 获取主机信息
     getControlInfo: "terminal/terControlInfo/getControlByCode",
     // 获取指纹认证在押人员信息
@@ -19,6 +17,8 @@ export default {
     getPoliceFingerKey: "terminal/odsFinger/getPoliceFingerKey",
     // 保存民警录入指纹信息
     savePoliceFingerInfo: "terminal/odsFinger/savePolice",
+    // 同步在押人员指纹信息
+    syncRoomPersonFingerInfo: "terminal/odsFinger/syncRoomPersonFingerInfo",
     // 保存指纹同步状态（成功|失败）信息
     saveFingerState: "terminal/terLog/saveLog",
     // 获取心情信息
@@ -29,22 +29,17 @@ export default {
     getUpdateInfo: "terminal/update/getUpdateInfo",
     // 修改分机信息
     updateTerminal: "terminal/common/updateAppVersion",
-    // 1:1人脸比对，用于点名
-    faceRecognition11: "arc/face/compareCNP",
+    // 获取分机音量
+    getTerminalVolume: "terminal/device/api/findDeviceInfo",
+    // 设置分机音量
+    setDeviceVolume: "terminal/device/api/setDeviceVol",
     // 获取分机设备在线状态
     terminalDeviceStatus: "terminal/device/api/terminalDeviceStatus",
     // 获取在押人员信息
     getOdsPersonById: "terminal/odsPersonInfo/getOdsPersonById",
-    // 新增操作动态信息
-    setDynamicInfo: "terminal/terOperationInfo/save",
-    // 推送主机动态消息
-    sendMsgToControl: "websocket/msgFilterSend",
   },
   // 电子水牌页
   main: {
-    // 获取所有监室列表
-    getRoomGroupInfo:
-      "terminal/terTerminalGroup/findTerminalGroupInfoByManagerId?managerId=",
     // 管教人员
     getRoomPolices: "terminal/manager/getRoomPolices/",
     // 监室人员
@@ -58,8 +53,8 @@ export default {
     getUserByCardNum: "terminal/sysUser/getUserByCardNum?cardNum=",
     // 获取预约人信息
     getPrisonerInfo: "terminal/access/api/getAllPrisonerByRoomId/",
-    // 人脸识别民警登录
-    policeFaceOneToMany: "terminal/faceRecognition/policeFaceOneToMany",
+    // 1:N人脸识别，用于登录
+    faceRecognition1N: "terminal/faceRecognition/policeFaceOneToMany",
     // 面对面管理
     face: {
       getDictionaryTypeList: "terminal/face/api/getDictionaryTypeList",
@@ -144,18 +139,24 @@ export default {
       // 根据姓名模糊查询
       getAllPrisoner: "terminal/odsPersonInfo/getRyByKeyword",
     },
-    // 监室事务提醒
-    schedule: {
-      // 获取监室事务信息
-      findReminder: "terminal/pacReminder/findReminder",
-    },
-    // 派药管理
-    medication: {
-      // 查询派药信息
-      listDrugDispense: "terminal/pacMDrugDispense/listDrugDispense",
-      // 保存派药信息
-      saveDrugDispense: "terminal/pacMDrugDispense/saveDrugDispense",
+    // 巡诊登记
+    patrol: {
+      // 获取巡诊打卡信息
+      findPatrolInfo: "terminal/pacMedicalIllness/findPatrolInfo",
+      // 保存巡诊打卡信息
+      savePatrolInfo: "terminal/pacMedicalIllness/savePatrolInfo",
+      // 获取巡诊登记信息
+      getIllnessAppointmentListByRoomNo: "terminal/pacMedicalIllness/getIllnessAppointmentListByRoomNo",
+      // 保存巡诊登记信息
+      saveReportDiseasePatrol: "terminal/pacMedicalIllness/saveReportDiseasePatrol",
     }
+  },
+  // 在押人员
+  prisoner: {
+    // 1:N人脸比对
+    faceRecognition1N: "terminal/faceRecognition/prisonerImgOneToMany",
+    // 1:1人脸比对
+    faceRecognition11: "terminal/faceRecognition/prisonerImageOneToOne",
   },
   medication: {
     getRoomInfo: "terminal/terTerminalInfo/getRoomInfo",
@@ -167,10 +168,6 @@ export default {
     getAllPrisonerByJsh: "terminal/access/api/getAllPrisonerByJsh",
     saveAccess: "terminal/access/api/saveAccess",
     accessRecord: "terminal/access/api/accessRecord",
-  },
-  mutual: {
-    getRoomInfo: "terminal/common/getFaceRoomInfo",
-    upload: "terminal/pacFile/upload",
   },
 
   /**

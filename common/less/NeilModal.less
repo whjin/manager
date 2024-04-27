@@ -1,4 +1,13 @@
 .neil-modal-container {
+  .modal-horizontal-divider {
+    height: 1upx;
+    background-image: linear-gradient(
+      to right,
+      rgba(0, 198, 255, 0.3),
+      rgba(0, 198, 255, 1),
+      rgba(0, 198, 255, 0.3)
+    );
+  }
   .setting-modal-container {
     .modal-box {
       width: 600upx;
@@ -119,7 +128,6 @@
       width: 100%;
       height: 80upx;
       line-height: 80upx;
-      margin-top: 1upx;
       box-sizing: border-box;
       display: flex;
       justify-content: center;
@@ -196,14 +204,6 @@
           padding: 6.88upx 27.77upx;
           font-size: 22.22upx;
           color: #fff;
-          border: 0.69upx solid;
-          border-image: 1
-            linear-gradient(
-              to right,
-              rgba(0, 198, 255, 0),
-              rgba(0, 198, 255, 1),
-              rgba(0, 198, 255, 0)
-            );
         }
         li:hover {
           color: #35fffa;
@@ -212,8 +212,9 @@
     }
     .update-table-scroll {
       width: 100%;
-      height: 220upx;
+      height: 270upx;
       box-sizing: border-box;
+      margin-bottom: 24upx;
       .update-note {
         white-space: pre;
         color: #fff;
@@ -228,7 +229,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding-top: 70upx;
       .offline-content {
         font-size: 20upx;
         color: #35fffa;
@@ -303,6 +304,15 @@
           width: 22upx;
         }
       }
+    }
+    .modal-horizontal-divider {
+      height: 1upx;
+      background-image: linear-gradient(
+        to right,
+        rgba(0, 198, 255, 0),
+        rgba(0, 198, 255, 1),
+        rgba(0, 198, 255, 0)
+      );
     }
     .volume-modal-content {
       width: 100%;

@@ -67,7 +67,7 @@ export default {
     },
     async getDrugInfo () {
       let res = await Api.apiCall('get', Api.police.conditionReport.getViolationType, {}, true);
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         this.resultList = res.data;
       }
     },
@@ -75,7 +75,7 @@ export default {
       let res = await Api.apiCall('get', Api.police.conditionReport.getViolation, {
         fieldName: val
       }, true);
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         this.resultList = res.data;
       }
     }

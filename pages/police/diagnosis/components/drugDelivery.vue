@@ -20,7 +20,7 @@
             <view class="fields">
               <text class="text">出生年月：</text>
             </view>
-            <view class="inside-border input">{{ selectedPrisoner.birthday | dateFormatFilter }}</view>
+            <view class="inside-border input">{{ selectedPrisoner && selectedPrisoner.birthday || '无' }}</view>
           </view>
         </view>
         <!-- 基本信息 -->
@@ -89,35 +89,43 @@
                    }" style="width: 960.417upx;" v-model="medicineParams.diagnosis" type='text' placeholder="请输入初步诊断" />
           </view>
         </view>
-        <view class="form-row">
-          <view class="form-col">
-            <view class="fields">
-              <text class="text">体格检查：</text>
-            </view>
-            <view class="physique-info">
-              <view class="physique-info-details">
-                体温
-                <input class="inside-border input" v-model="medicineParams.bodyTemperature" type="number">
-                ℃
+          <view class="form-row">
+            <view class="form-col">
+              <view class="fields">
+                <text class="text">体格检查：</text>
               </view>
-              <view class="physique-info-details">
-                血压
-                <input class="inside-border input" v-model="medicineParams.bloodPressure" type="number">
-                mmHg
-              </view>
-              <view class="physique-info-details">
-                脉搏
-                <input class="inside-border input" v-model="medicineParams.pulse" type="number">
-                次/min
-              </view>
-              <view class="physique-info-details">
-                呼吸
-                <input class="inside-border input" v-model="medicineParams.breathe" type="number">
-                次/min
+              <view class="physique-info">
+                <view class="physique-info-details">
+                  体温
+                  <input class="inside-border input"
+                         v-model="medicineParams.bodyTemperature"
+                         type="number">
+                  ℃
+                </view>
+                <view class="physique-info-details">
+                  血压
+                  <input class="inside-border input"
+                         v-model="medicineParams.bloodPressure"
+                         type="number">
+                  mmHg
+                </view>
+                <view class="physique-info-details">
+                  脉搏
+                  <input class="inside-border input"
+                         v-model="medicineParams.pulse"
+                         type="number">
+                  次/min
+                </view>
+                <view class="physique-info-details">
+                  呼吸
+                  <input class="inside-border input"
+                         v-model="medicineParams.breathe"
+                         type="number">
+                  次/min
+                </view>
               </view>
             </view>
           </view>
-        </view>
         <!-- 处方 -->
         <view class="form-row" id="medicinePrescription">
           <view class="form-col">
@@ -243,13 +251,13 @@ export default {
       this.$forceUpdate();
       this.$nextTick(() => {
         this.intoView = view;
-      });
+      })
     },
     inputBlur () {
       this.$forceUpdate();
       this.$nextTick(() => {
         this.addCushion = false;
-      });
+      })
     },
     // 设置出药时间
     setPrescribeTime (time) {
@@ -319,7 +327,7 @@ export default {
         let obj = {
           id: i.drugManageId,
           drugSpecific: i.drugSpecific
-        };
+        }
         let quantity = i.quantity * i.yypl * i.drugUseDays;
         if (isEnough) {
           if (quantity > i.remainStorehouse) {
@@ -332,7 +340,7 @@ export default {
             return i;
           }
         }
-      });
+      })
       if (!isEnough) {
         return uni.showToast({
           title: `开具处方失败，${lackDrug}库存不足！`,
@@ -348,7 +356,7 @@ export default {
       let res = await Api.apiCall('post', Api.police.diagnosis.drugDelivery, params, true);
       this.medicineRecipeParams = [];
       this.$refs.prescriptionList && this.$refs.prescriptionList.clearList();
-      if (res.state.code == 200) {
+      if (res.state.code === 200) {
         uni.showToast({
           title: res.data || '药品出库成功！',
           position: 'center',
